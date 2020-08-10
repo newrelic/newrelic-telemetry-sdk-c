@@ -14,9 +14,11 @@ jobs:
     - uses: actions/checkout@v2
     - name: run tests
       run: |
-          mkdir build
+          mkdir -p build
           cd build
+          rm -rf *
           cmake -DCMAKE_BUILD_TYPE=Debug \
+                -DENABLE_TESTS=on \
                 -DCMAKE_CXX_FLAGS="-Werror" \
                 ..
           make
@@ -30,6 +32,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: run tests
       run: |
+          mkdir build
           cd build
           cmake -DENABLE_TESTS=1 `
                 ..
