@@ -1,0 +1,11 @@
+[package]
+name = "newrelic-telemetry-sdk-c"
+version = "0.1.0"
+authors = ["New Relic <opensource@newrelic.com>"]
+edition = "2018"
+
+[lib]
+name = "newrelic_telemetry_sdk_c"
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]

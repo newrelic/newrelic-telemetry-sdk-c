@@ -1,0 +1,65 @@
+cmake_minimum_required(VERSION 3.0)
+
+project(newrelic_telemetry_sdk_c)
+
+#
+# This includes the Rust/cargo integration for CMake.
+#
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+include(CMakeCargo)
+
+enable_language(Rust)
+
+#
+# Handle command line flags
+#
+option(ENABLE_EXAMPLES "Whether to build examples" OFF)
+option(ENABLE_TESTS "Whether to run tests" OFF)
+
+if(ENABLE_TESTS)
+    set(ENABLE_EXAMPLES on)
+endif()
+
+#
+# Build the C wrapper around the Rust Telemetry SDK.
+#
+cargo_build(NAME newrelic_telemetry_sdk_c)
+
+#
+# Add the include directories
+#
+include_directories(include)
+
+#
+# Build examples
+#
+set(EXAMPLES simple)
+
+if (ENABLE_EXAMPLES)
+    foreach (EXAMPLE ${EXAMPLES})
+        add_executable(example_${EXAMPLE} examples/${EXAMPLE}.c)
+        target_link_libraries(example_${EXAMPLE} newrelic_telemetry_sdk_c ${OS_LIBS})
+    endforeach()
+endif() 
+
+#
+# Add tests
+#
+# Under Linux examples are run under valgrind, under Windows examples are run
+# without memory checker.
+#
+if (ENABLE_EXAMPLES AND ENABLE_TESTS)
+    enable_testing()
+
+    foreach (EXAMPLE ${EXAMPLES})
+        if (WIN32)
+            add_test(NAME test_${EXAMPLE}
+                     COMMAND $<TARGET_FILE:example_${EXAMPLE}>)
+        else()
+            add_test(NAME test_${EXAMPLE}
+                     COMMAND valgrind --leak-check=full 
+                                      --error-exitcode=1 
+                                      $<TARGET_FILE:example_${EXAMPLE}>)
+        endif() 
+    endforeach()
+endif() 

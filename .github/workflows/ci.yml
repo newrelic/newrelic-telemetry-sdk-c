@@ -7,10 +7,43 @@ on:
     branches: [ main ]
 
 jobs:
-  unit_tests:
-    name: Unit tests
+  valgrind:
+    name: Valgrind examples
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: run tests
-      run: echo README.md
+      run: |
+          mkdir build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=Debug \
+                -DCMAKE_CXX_FLAGS="-Werror" \
+                ..
+          make
+          make test
+          exit 0
+
+  examples_win:
+    name: Examples Windows
+    runs-on: windows-2019
+    steps:
+    - uses: actions/checkout@v2
+    - name: run tests
+      run: |
+          cd build
+          cmake -DENABLE_TESTS=1 `
+                ..
+          $exit = $LASTEXITCODE
+          if ($exit -ne 0) {
+            exit $exit
+          }
+          cmake --build .
+          $exit = $LASTEXITCODE
+          if ($exit -ne 0) {
+            exit $exit
+          }
+          ctest -C Debug
+          $exit = $LASTEXITCODE
+          if ($exit -ne 0) {
+            exit $exit
+          }
