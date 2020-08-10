@@ -12,7 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: install dependencies
+      run: |
+          sudo apt-get install valgrind
     - name: run tests
+      env:
+          NEW_RELIC_API_KEY: "replace with secret"
       run: |
           mkdir -p build
           cd build
@@ -31,6 +36,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: run tests
+      env:
+          NEW_RELIC_API_KEY: "replace with secret"
       run: |
           mkdir build
           cd build
