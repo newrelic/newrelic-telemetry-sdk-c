@@ -1,7 +1,7 @@
 #include "newrelic-telemetry-sdk.h"
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef WINDOWS
+#ifdef OS_WINDOWS
 #include <windows.h>
 #else
 #include <sys/time.h>
@@ -27,7 +27,7 @@ int main() {
 
   /* Create a span and add it to the batch */
   {
-#ifdef WINDOWS
+#ifdef OS_WINDOWS
     SYSTEMTIME time;
     GetSystemTime(&time);
     nrt_time_t time_ms = (time.wSecond * 1000) + time.wMilliseconds;

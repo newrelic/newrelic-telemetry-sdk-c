@@ -34,7 +34,7 @@ include_directories(include)
 # Platform specific setup
 #
 if (WIN32)
-    add_definitions(-DWINDOWS)
+    add_definitions(-DOS_WINDOWS)
 endif()
 
 #
