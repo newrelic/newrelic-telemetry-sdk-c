@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  valgrind:
+    name: Valgrind examples
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: install dependencies
+      run: |
+          sudo apt-get install valgrind
+    - name: run tests
+      env:
+          NEW_RELIC_API_KEY: "replace with secret"
+      run: |
+          mkdir -p build
+          cd build
+          rm -rf *
+          cmake -DCMAKE_BUILD_TYPE=Debug \
+                -DENABLE_TESTS=on \
+                -DCMAKE_CXX_FLAGS="-Werror" \
+                ..
+          make
+          make test
+          exit 0
+
+  examples_win:
+    name: Examples Windows
+    runs-on: windows-2019
+    steps:
+    - uses: actions/checkout@v2
+    - name: run tests
+      env:
+          NEW_RELIC_API_KEY: "replace with secret"
+      run: |
+          mkdir build
+          cd build
+          cmake -DENABLE_TESTS=1 `
+                ..
+          $exit = $LASTEXITCODE
+          if ($exit -ne 0) {
+            exit $exit
+          }
+          cmake --build .
+          $exit = $LASTEXITCODE
+          if ($exit -ne 0) {
+            exit $exit
+          }
+          ctest -C Debug
+          $exit = $LASTEXITCODE
+          if ($exit -ne 0) {
+            exit $exit
+          }
