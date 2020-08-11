@@ -18,5 +18,5 @@ int main() {
   nrt_sender_t *sender = nrt_sender_new(api_key);
 
   /* Wait for the batch to be sent and shut down the sender. */
-  nrt_sender_shutdown(sender);
+  nrt_sender_shutdown(&sender);
 }

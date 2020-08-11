@@ -1,16 +1,130 @@
 #ifndef NEWRELIC_TELEMETRY_SDK
 #define NEWRELIC_TELEMETRY_SDK
 
+#include <stdbool.h>
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/**
+ * A Sender is capable of both queuing and sending span and metrics batches to
+ * a configured New Relic collector.
+ */
 typedef struct _nrt_sender_t nrt_sender_t;
 
 /**
- * Create a new sender.
+ * A span batch
  *
- * Senders can be used to send span and metrics batches.
+ * A collection of spans.
+ */
+typedef struct _nrt_span_batch_t nrt_span_batch_t;
+
+/**
+ * A span 
+ */
+typedef struct _nrt_span_t nrt_span_t;
+
+/**
+ * Indicates a point in time or a duration.
+ *
+ * A point in time is indicated by a time in Epoch milliseconds, a duration is
+ * indicated by milliseconds.
+ */
+typedef uint64_t nrt_time_t;
+
+/**
+ * Create a new span.
+ *
+ * Allocate and initialize a new span.
+ *
+ * @param id the span id
+ * @param trace_id the trace id
+ * @param parent_id the parent id. Passing NULL indicates that the span has no parent.
+ * @return a span
+ */
+nrt_span_t *nrt_span_new(const char *id, const char* trace_id, const char* parent_id);
+
+/**
+ * Set the name of a span
+ *
+ * @param span
+ * @param name the name for the span
+ * @return true if the name could be set
+ */
+bool nrt_span_set_name(nrt_span_t *span, const char *name);
+
+/**
+ * Set the service name of a span
+ *
+ * @param span
+ * @param service_name the service name for the span
+ * @return true if the service name could be set
+ */
+bool nrt_span_set_service_name(nrt_span_t *span, const char *service_name);
+
+/**
+ * Set the start timestamp for a span
+ *
+ * @param span
+ * @param timestamp the start timestamp for the span in Epoch milliseconds
+ * @return true if the start timestamp could be set
+ */
+bool nrt_span_set_timestamp(nrt_span_t *span, nrt_time_t timestamp);
+
+/**
+ * Set the duration for a span
+ *
+ * @param span
+ * @param duration the duration for the span in milliseconds
+ * @return true if the duration could be set
+ */
+bool nrt_span_set_duration(nrt_span_t *span, nrt_time_t duration);
+
+/**
+ * Destroy a span.
+ *
+ * Destroy a span without adding it to a batch. The passed pointer will be set
+ * to NULL.
+ *
+ * @param span
+ */
+void nrt_span_destroy(nrt_span_t **span);
+
+/**
+ * Create a new span batch.
+ *
+ * A span batch is a collection of spans that is sent in one payload.
+ *
+ * @return an empty span batch
+ */
+nrt_span_batch_t *nrt_span_batch_new();
+
+/**
+ * Add a span to a span batch.
+ *
+ * If a span is sucessfully added to a batch, the span batch takes ownership of
+ * the span and the pointer of the passed span will be set to NULL.
+ *
+ * @param batch a span batch
+ * @param span a span
+ * @return true if the span was added to the batch
+ */
+bool nrt_span_batch_record(nrt_span_batch_t *batch, nrt_span_t **span);
+
+/**
+ * Destroy a span batch.
+ *
+ * Spans previously added to the span batch will be lost. The passed pointer
+ * will be set to NULL.
+ *
+ * @param batch a span batch
+ */
+void nrt_span_batch_destroy(nrt_span_batch_t **batch);
+
+/**
+ * Create a new sender.
  *
  * @param key an Insights API key
  * @return a sender
@@ -18,13 +132,40 @@ typedef struct _nrt_sender_t nrt_sender_t;
 nrt_sender_t *nrt_sender_new(const char *key);
 
 /**
+ * Send a span batch.
+ *
+ * Put a span batch in the queue of the sender. This function returns as soon
+ * as the span batch was queued and doesn't wait for it to be sent
+ * successfully.
+ *
+ * If the span batch is successfully queued, the sender takes ownership of the
+ * span batch. The passed pointer will be set to NULL.
+ *
+ * @param sender a sender
+ * @param sender the span batch to be sent
+ * @return true if the span batch was successfully queued
+ */
+bool nrt_sender_send(nrt_sender_t *sender, nrt_span_batch_t **batch);
+
+/**
  * Shutdown a sender.
  *
- * Shuts down the sender, sends pending data and frees the sender object.
+ * Shuts down the sender, sends pending data and frees the sender object. The
+ * passed pointer will be set to NULL.
  *
  * @param sender a sender
  */
-void nrt_sender_shutdown(nrt_sender_t *sender);
+void nrt_sender_shutdown(nrt_sender_t **sender);
+
+/**
+ * Destroy a sender.
+ *
+ * Destroy the sender, without making sure pending data is sent. The passed
+ * pointer will be set to NULL.
+ *
+ * @param sender a sender
+ */
+void nrt_sender_destroy(nrt_sender_t **sender);
 
 #ifdef __cplusplus
 }

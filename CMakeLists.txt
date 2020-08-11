@@ -31,9 +31,16 @@ cargo_build(NAME newrelic_telemetry_sdk_c)
 include_directories(include)
 
 #
+# Platform specific setup
+#
+if (WIN32)
+    add_definitions(-DWINDOWS)
+endif()
+
+#
 # Build examples
 #
-set(EXAMPLES simple)
+set(EXAMPLES simple trace_api)
 
 if (ENABLE_EXAMPLES)
     foreach (EXAMPLE ${EXAMPLES})
