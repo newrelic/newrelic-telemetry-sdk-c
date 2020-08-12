@@ -22,9 +22,14 @@ typedef struct _nrt_sender_t nrt_sender_t;
 typedef struct _nrt_span_batch_t nrt_span_batch_t;
 
 /**
- * A span 
+ * A span
  */
 typedef struct _nrt_span_t nrt_span_t;
+
+/**
+ * A collection of attributes
+ */
+typedef struct _nrt_attributes_t nrt_attributes_t;
 
 /**
  * Indicates a point in time or a duration.
@@ -35,16 +40,88 @@ typedef struct _nrt_span_t nrt_span_t;
 typedef uint64_t nrt_time_t;
 
 /**
+ * Create a new attribute collection.
+ *
+ * Allocate and initialize an empty attribute collection
+ *
+ * @return an empty attribute collection
+ */
+nrt_attributes_t* nrt_attributes_new();
+
+/**
+ * Add an int attribute to an attribute collection
+ *
+ * @param attributes
+ * @param key the attribute key
+ * @param value the attribute value
+ * @return true if the attribute was added
+ */
+bool nrt_attributes_set_int(nrt_attributes_t* attributes,
+                            const char* key,
+                            int64_t value);
+
+/**
+ * Add an unsigned int attribute to an attribute collection
+ *
+ * @param attributes
+ * @param key the attribute key
+ * @param value the attribute value
+ * @return true if the attribute was added
+ */
+bool nrt_attributes_set_uint(nrt_attributes_t* attributes,
+                             const char* key,
+                             uint64_t value);
+
+/**
+ * Add a double attribute to an attribute collection
+ *
+ * @param attributes
+ * @param key the attribute key
+ * @param value the attribute value
+ * @return true if the attribute was added
+ */
+bool nrt_attributes_set_double(nrt_attributes_t* attributes,
+                               const char* key,
+                               double value);
+
+/**
+ * Add a string attribute to an attribute collection
+ *
+ * @param attributes
+ * @param key the attribute key
+ * @param value the attribute value
+ * @return true if the attribute was added
+ */
+bool nrt_attributes_set_string(nrt_attributes_t* attributes,
+                               const char* key,
+                               const char* value);
+
+/**
+ * Add a bool attribute to an attribute collection
+ *
+ * @param attributes
+ * @param key the attribute key
+ * @param value the attribute value
+ * @return true if the attribute was added
+ */
+bool nrt_attributes_set_bool(nrt_attributes_t* attributes,
+                             const char* key,
+                             bool value);
+
+/**
  * Create a new span.
  *
  * Allocate and initialize a new span.
  *
  * @param id the span id
  * @param trace_id the trace id
- * @param parent_id the parent id. Passing NULL indicates that the span has no parent.
+ * @param parent_id the parent id. Passing NULL indicates that the span has no
+ * parent.
  * @return a span
  */
-nrt_span_t *nrt_span_new(const char *id, const char* trace_id, const char* parent_id);
+nrt_span_t* nrt_span_new(const char* id,
+                         const char* trace_id,
+                         const char* parent_id);
 
 /**
  * Set the name of a span
@@ -53,7 +130,7 @@ nrt_span_t *nrt_span_new(const char *id, const char* trace_id, const char* paren
  * @param name the name for the span
  * @return true if the name could be set
  */
-bool nrt_span_set_name(nrt_span_t *span, const char *name);
+bool nrt_span_set_name(nrt_span_t* span, const char* name);
 
 /**
  * Set the service name of a span
@@ -62,7 +139,7 @@ bool nrt_span_set_name(nrt_span_t *span, const char *name);
  * @param service_name the service name for the span
  * @return true if the service name could be set
  */
-bool nrt_span_set_service_name(nrt_span_t *span, const char *service_name);
+bool nrt_span_set_service_name(nrt_span_t* span, const char* service_name);
 
 /**
  * Set the start timestamp for a span
@@ -71,7 +148,7 @@ bool nrt_span_set_service_name(nrt_span_t *span, const char *service_name);
  * @param timestamp the start timestamp for the span in Epoch milliseconds
  * @return true if the start timestamp could be set
  */
-bool nrt_span_set_timestamp(nrt_span_t *span, nrt_time_t timestamp);
+bool nrt_span_set_timestamp(nrt_span_t* span, nrt_time_t timestamp);
 
 /**
  * Set the duration for a span
@@ -80,7 +157,18 @@ bool nrt_span_set_timestamp(nrt_span_t *span, nrt_time_t timestamp);
  * @param duration the duration for the span in milliseconds
  * @return true if the duration could be set
  */
-bool nrt_span_set_duration(nrt_span_t *span, nrt_time_t duration);
+bool nrt_span_set_duration(nrt_span_t* span, nrt_time_t duration);
+
+/**
+ * Set attributes on a span
+ *
+ * Attributes will be stored on the span, The pointer to the attribute
+ * collection will be set to NULL.
+ *
+ * @param span
+ * @param attributes a collection of attributes
+ */
+bool nrt_span_set_attributes(nrt_span_t* span, nrt_attributes_t** attributes);
 
 /**
  * Destroy a span.
@@ -90,7 +178,7 @@ bool nrt_span_set_duration(nrt_span_t *span, nrt_time_t duration);
  *
  * @param span
  */
-void nrt_span_destroy(nrt_span_t **span);
+void nrt_span_destroy(nrt_span_t** span);
 
 /**
  * Create a new span batch.
@@ -99,7 +187,7 @@ void nrt_span_destroy(nrt_span_t **span);
  *
  * @return an empty span batch
  */
-nrt_span_batch_t *nrt_span_batch_new();
+nrt_span_batch_t* nrt_span_batch_new();
 
 /**
  * Add a span to a span batch.
@@ -111,7 +199,7 @@ nrt_span_batch_t *nrt_span_batch_new();
  * @param span a span
  * @return true if the span was added to the batch
  */
-bool nrt_span_batch_record(nrt_span_batch_t *batch, nrt_span_t **span);
+bool nrt_span_batch_record(nrt_span_batch_t* batch, nrt_span_t** span);
 
 /**
  * Destroy a span batch.
@@ -121,7 +209,7 @@ bool nrt_span_batch_record(nrt_span_batch_t *batch, nrt_span_t **span);
  *
  * @param batch a span batch
  */
-void nrt_span_batch_destroy(nrt_span_batch_t **batch);
+void nrt_span_batch_destroy(nrt_span_batch_t** batch);
 
 /**
  * Create a new sender.
@@ -129,7 +217,7 @@ void nrt_span_batch_destroy(nrt_span_batch_t **batch);
  * @param key an Insights API key
  * @return a sender
  */
-nrt_sender_t *nrt_sender_new(const char *key);
+nrt_sender_t* nrt_sender_new(const char* key);
 
 /**
  * Send a span batch.
@@ -145,7 +233,7 @@ nrt_sender_t *nrt_sender_new(const char *key);
  * @param sender the span batch to be sent
  * @return true if the span batch was successfully queued
  */
-bool nrt_sender_send(nrt_sender_t *sender, nrt_span_batch_t **batch);
+bool nrt_sender_send(nrt_sender_t* sender, nrt_span_batch_t** batch);
 
 /**
  * Shutdown a sender.
@@ -155,7 +243,7 @@ bool nrt_sender_send(nrt_sender_t *sender, nrt_span_batch_t **batch);
  *
  * @param sender a sender
  */
-void nrt_sender_shutdown(nrt_sender_t **sender);
+void nrt_sender_shutdown(nrt_sender_t** sender);
 
 /**
  * Destroy a sender.
@@ -165,7 +253,7 @@ void nrt_sender_shutdown(nrt_sender_t **sender);
  *
  * @param sender a sender
  */
-void nrt_sender_destroy(nrt_sender_t **sender);
+void nrt_sender_destroy(nrt_sender_t** sender);
 
 #ifdef __cplusplus
 }

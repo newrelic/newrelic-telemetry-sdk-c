@@ -2,8 +2,59 @@ use std::os::raw::c_char;
 use std::ptr;
 
 pub struct Sender {}
-pub struct Span {}
 pub struct SpanBatch {}
+pub struct Span {}
+pub struct Attributes {}
+
+#[no_mangle]
+pub extern "C" fn nrt_attributes_new() -> *mut Attributes {
+    ptr::null_mut()
+}
+
+#[no_mangle]
+pub extern "C" fn nrt_attributes_set_int(
+    attributes: *mut Attributes,
+    key: *const c_char,
+    value: i64,
+) -> bool {
+    false
+}
+
+#[no_mangle]
+pub extern "C" fn nrt_attributes_set_uint(
+    attributes: *mut Attributes,
+    key: *const c_char,
+    value: u64,
+) -> bool {
+    false
+}
+
+#[no_mangle]
+pub extern "C" fn nrt_attributes_set_double(
+    attributes: *mut Attributes,
+    key: *const c_char,
+    value: f64,
+) -> bool {
+    false
+}
+
+#[no_mangle]
+pub extern "C" fn nrt_attributes_set_string(
+    attributes: *mut Attributes,
+    key: *const c_char,
+    value: *const c_char,
+) -> bool {
+    false
+}
+
+#[no_mangle]
+pub extern "C" fn nrt_attributes_set_bool(
+    attributes: *mut Attributes,
+    key: *const c_char,
+    value: bool,
+) -> bool {
+    false
+}
 
 #[no_mangle]
 pub extern "C" fn nrt_span_new(
@@ -31,6 +82,14 @@ pub extern "C" fn nrt_span_set_timestamp(span: *mut Span, timestamp: u64) -> boo
 
 #[no_mangle]
 pub extern "C" fn nrt_span_set_duration(span: *mut Span, duration: u64) -> bool {
+    false
+}
+
+#[no_mangle]
+pub extern "C" fn nrt_span_set_attributes(
+    span: *mut Span,
+    attributes: *mut *mut Attributes,
+) -> bool {
     false
 }
 
