@@ -57,6 +57,9 @@ pub extern "C" fn nrt_attributes_set_bool(
 }
 
 #[no_mangle]
+pub extern "C" fn nrt_attributes_destroy(span: *mut *mut Attributes) {}
+
+#[no_mangle]
 pub extern "C" fn nrt_span_new(
     id: *const c_char,
     trace_id: *const c_char,

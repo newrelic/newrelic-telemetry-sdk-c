@@ -109,6 +109,16 @@ bool nrt_attributes_set_bool(nrt_attributes_t* attributes,
                              bool value);
 
 /**
+ * Destroy an attribute collection
+ *
+ * Destroy the attribute collection without adding it to a span. The passed
+ * pointer will be set to NULL.
+ *
+ * @param attributes an attribute collection
+ */
+void nrt_attributes_destroy(nrt_attributes_t** attributes);
+
+/**
  * Create a new span.
  *
  * Allocate and initialize a new span.
@@ -162,8 +172,10 @@ bool nrt_span_set_duration(nrt_span_t* span, nrt_time_t duration);
 /**
  * Set attributes on a span
  *
- * Attributes will be stored on the span, The pointer to the attribute
- * collection will be set to NULL.
+ * If the attributes were successfully added to the span, the span takes
+ * ownership of the attribute collection. Otherwise the attribute collection
+ * will be destroyed. The passed pointer to the attribute collection will
+ * always be set to NULL.
  *
  * @param span
  * @param attributes a collection of attributes
@@ -192,12 +204,13 @@ nrt_span_batch_t* nrt_span_batch_new();
 /**
  * Add a span to a span batch.
  *
- * If a span is sucessfully added to a batch, the span batch takes ownership of
- * the span and the pointer of the passed span will be set to NULL.
+ * If the span was successfully added to the batch, the batch takes ownership
+ * of the span. Otherwise the span will be destroyed. The passed pointer will
+ * always be set to NULL.
  *
  * @param batch a span batch
  * @param span a span
- * @return true if the span was added to the batch
+ * @return true if the span was successfully added to the batch
  */
 bool nrt_span_batch_record(nrt_span_batch_t* batch, nrt_span_t** span);
 
@@ -227,7 +240,8 @@ nrt_sender_t* nrt_sender_new(const char* key);
  * successfully.
  *
  * If the span batch is successfully queued, the sender takes ownership of the
- * span batch. The passed pointer will be set to NULL.
+ * span batch. Otherwise the batch will be destroyed. The passed pointer will
+ * always be set to NULL.
  *
  * @param sender a sender
  * @param sender the span batch to be sent
