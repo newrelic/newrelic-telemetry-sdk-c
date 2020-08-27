@@ -9,3 +9,4 @@ name = "newrelic_telemetry_sdk_c"
 crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
+newrelic-telemetry = { path = "vendor/newrelic-telemetry-sdk-rust" }

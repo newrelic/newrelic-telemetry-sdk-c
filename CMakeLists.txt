@@ -35,12 +35,18 @@ include_directories(include)
 #
 if (WIN32)
     add_definitions(-DOS_WINDOWS)
+
+    set(OS_LIBS Crypt32 Ncrypt Secur32 Userenv Ws2_32)
+else()
+    find_package(Threads)
+
+    set(OS_LIBS dl m ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 #
 # Build examples
 #
-set(EXAMPLES simple trace_api)
+set(EXAMPLES simple trace_api destroy_attributes)
 
 if (ENABLE_EXAMPLES)
     foreach (EXAMPLE ${EXAMPLES})

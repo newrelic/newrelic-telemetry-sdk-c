@@ -11,10 +11,16 @@ jobs:
     name: Valgrind examples
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: checkout
+      uses: actions/checkout@v2
+      with:
+          token: ${{ secrets.NEWRELIC_PAT }}
+          submodules: recursive
+
     - name: install dependencies
       run: |
           sudo apt-get install valgrind
+
     - name: run tests
       env:
           NEW_RELIC_API_KEY: "replace with secret"
@@ -34,7 +40,12 @@ jobs:
     name: Examples Windows
     runs-on: windows-2019
     steps:
-    - uses: actions/checkout@v2
+    - name: checkout
+      uses: actions/checkout@v2
+      with:
+          token: ${{ secrets.NEWRELIC_PAT }}
+          submodules: recursive
+
     - name: run tests
       env:
           NEW_RELIC_API_KEY: "replace with secret"
