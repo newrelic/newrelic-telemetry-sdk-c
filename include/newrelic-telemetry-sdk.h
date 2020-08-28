@@ -9,10 +9,10 @@ extern "C" {
 #endif
 
 /**
- * A Sender is capable of both queuing and sending span and metrics batches to
+ * A Client is capable of both queuing and sending span and metrics batches to
  * a configured New Relic collector.
  */
-typedef struct _nrt_sender_t nrt_sender_t;
+typedef struct _nrt_client_t nrt_client_t;
 
 /**
  * A span batch
@@ -225,49 +225,49 @@ bool nrt_span_batch_record(nrt_span_batch_t* batch, nrt_span_t** span);
 void nrt_span_batch_destroy(nrt_span_batch_t** batch);
 
 /**
- * Create a new sender.
+ * Create a new client.
  *
  * @param key an Insights API key
- * @return a sender
+ * @return a client
  */
-nrt_sender_t* nrt_sender_new(const char* key);
+nrt_client_t* nrt_client_new(const char* key);
 
 /**
  * Send a span batch.
  *
- * Put a span batch in the queue of the sender. This function returns as soon
+ * Put a span batch in the queue of the client. This function returns as soon
  * as the span batch was queued and doesn't wait for it to be sent
  * successfully.
  *
- * If the span batch is successfully queued, the sender takes ownership of the
+ * If the span batch is successfully queued, the client takes ownership of the
  * span batch. Otherwise the batch will be destroyed. The passed pointer will
  * always be set to NULL.
  *
- * @param sender a sender
- * @param sender the span batch to be sent
+ * @param client a client
+ * @param client the span batch to be sent
  * @return true if the span batch was successfully queued
  */
-bool nrt_sender_send(nrt_sender_t* sender, nrt_span_batch_t** batch);
+bool nrt_client_send(nrt_client_t* client, nrt_span_batch_t** batch);
 
 /**
- * Shutdown a sender.
+ * Shutdown a client.
  *
- * Shuts down the sender, sends pending data and frees the sender object. The
+ * Shuts down the client, sends pending data and frees the client object. The
  * passed pointer will be set to NULL.
  *
- * @param sender a sender
+ * @param client a client
  */
-void nrt_sender_shutdown(nrt_sender_t** sender);
+void nrt_client_shutdown(nrt_client_t** client);
 
 /**
- * Destroy a sender.
+ * Destroy a client.
  *
- * Destroy the sender, without making sure pending data is sent. The passed
+ * Destroy the client, without making sure pending data is sent. The passed
  * pointer will be set to NULL.
  *
- * @param sender a sender
+ * @param client a client
  */
-void nrt_sender_destroy(nrt_sender_t** sender);
+void nrt_client_destroy(nrt_client_t** client);
 
 #ifdef __cplusplus
 }

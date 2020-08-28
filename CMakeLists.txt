@@ -68,7 +68,10 @@ if (ENABLE_EXAMPLES AND ENABLE_TESTS)
         if (WIN32)
             add_test(NAME test_${EXAMPLE}
                      COMMAND $<TARGET_FILE:example_${EXAMPLE}>)
-        else()
+        elseif (APPLE)
+            add_test(NAME test_${EXAMPLE}
+                     COMMAND $<TARGET_FILE:example_${EXAMPLE}>)
+        else ()
             add_test(NAME test_${EXAMPLE}
                      COMMAND valgrind --leak-check=full 
                                       --error-exitcode=1 

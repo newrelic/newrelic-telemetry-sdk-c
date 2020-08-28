@@ -1,10 +1,10 @@
 use newrelic_telemetry::attribute::Value;
+use newrelic_telemetry::{Client, ClientBuilder};
 use std::collections::HashMap;
 use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::ptr;
 
-pub struct Sender {}
 pub struct SpanBatch {}
 pub struct Span {}
 type Attributes = HashMap<String, Value>;
@@ -156,17 +156,21 @@ pub extern "C" fn nrt_span_batch_record(batch: *mut SpanBatch, span: *mut *mut S
 pub extern "C" fn nrt_span_batch_destroy(batch: *mut *mut SpanBatch) {}
 
 #[no_mangle]
-pub extern "C" fn nrt_sender_new(key: *const c_char) -> *mut Sender {
+pub extern "C" fn nrt_client_new(key: *const c_char) -> *mut Client {
+    if let Ok(api_key) = unsafe { CStr::from_ptr(key).to_str() } {
+        let client = ClientBuilder::new(api_key).build();
+        return Box::into_raw(Box::new(client));
+    }
     ptr::null_mut()
 }
 
 #[no_mangle]
-pub extern "C" fn nrt_sender_send(key: *const c_char, batch: *mut *mut SpanBatch) -> bool {
+pub extern "C" fn nrt_client_send(key: *const c_char, batch: *mut *mut SpanBatch) -> bool {
     false
 }
 
 #[no_mangle]
-pub extern "C" fn nrt_sender_shutdown(sender: *mut *mut Sender) {}
+pub extern "C" fn nrt_client_shutdown(client: *mut *mut Client) {}
 
 #[no_mangle]
-pub extern "C" fn nrt_sender_destroy(sender: *mut *mut Sender) {}
+pub extern "C" fn nrt_client_destroy(client: *mut *mut Client) {}
