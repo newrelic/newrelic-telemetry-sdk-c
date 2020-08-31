@@ -172,11 +172,15 @@ pub extern "C" fn nrt_client_new(key: *const c_char) -> *mut Client {
 }
 
 #[no_mangle]
+#[allow(unused_assignments)]
 pub extern "C" fn nrt_client_send(client: *mut Client, batch: *mut *mut SpanBatch) -> bool {
-    if let Some(client) = unsafe { client.as_mut() } {
-        if let Some(batch_ptr) = unsafe { batch.as_mut() } {
-            if let Some(batch) = unsafe { batch_ptr.as_mut() } {
+    if !client.is_null() {
+        let client = unsafe { &*client };
+        if !batch.is_null() {
+            let mut batch = unsafe { *batch };
+            if !batch.is_null() {
                 client.send_spans(*unsafe { Box::from_raw(batch) });
+                batch = ptr::null_mut();
                 return true;
             }
         }
@@ -186,20 +190,24 @@ pub extern "C" fn nrt_client_send(client: *mut Client, batch: *mut *mut SpanBatc
 
 #[no_mangle]
 pub extern "C" fn nrt_client_shutdown(client: *mut *mut Client) {
-    if let Some(client) = unsafe { client.as_mut() } {
-        if let Some(client) = unsafe { client.as_mut() } {
-            let client = *unsafe { Box::from_raw(client) };
+    if !client.is_null() {
+        let client = unsafe { *client };
+        if !client.is_null() {
+            let client = unsafe { *Box::from_raw(client) };
             client.shutdown();
         }
     }
 }
 
 #[no_mangle]
+#[allow(unused_assignments)]
 pub extern "C" fn nrt_client_destroy(client: *mut *mut Client) {
-    if let Some(client) = unsafe { client.as_mut() } {
-        if let Some(client) = unsafe { client.as_mut() } {
-            let client = *unsafe { Box::from_raw(client) };
-            drop(client);
+    if !client.is_null() {
+        let mut client = unsafe { *client };
+        if !client.is_null() {
+            let c = unsafe { *Box::from_raw(client) };
+            drop(c);
+            client = ptr::null_mut();
         }
     }
 }
