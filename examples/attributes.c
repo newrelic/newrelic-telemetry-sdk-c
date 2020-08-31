@@ -18,4 +18,12 @@ int main() {
   nrt_attributes_set_string(attrs, "string", "value");
   nrt_attributes_set_bool(attrs, "bool", true);
   nrt_attributes_destroy(&attrs);
+
+  /* Call with NULL values */
+  nrt_attributes_set_int(NULL, NULL, -6);
+  nrt_attributes_set_uint(NULL, NULL, 6);
+  nrt_attributes_set_double(NULL, NULL, 3.14159);
+  nrt_attributes_set_string(NULL, NULL, NULL);
+  nrt_attributes_set_bool(NULL, NULL, true);
+  nrt_attributes_destroy(NULL);
 }
