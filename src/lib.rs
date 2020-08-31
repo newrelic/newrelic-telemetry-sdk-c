@@ -58,7 +58,7 @@ fn nrt_attributes_set<T: Into<Value>>(
     key: *const c_char,
     value: T,
 ) -> bool {
-    if attributes.is_null() || key.is_null() {
+    if key.is_null() {
         return false;
     }
 
@@ -170,10 +170,6 @@ pub extern "C" fn nrt_client_config_set_backoff_factor(
     config: *mut ClientConfig,
     backoff_factor: u64,
 ) {
-    if config.is_null() {
-        return;
-    }
-
     if let Some(config) = unsafe { config.as_mut() } {
         config.backoff_factor = Some(Duration::from_millis(backoff_factor));
     }
@@ -181,10 +177,6 @@ pub extern "C" fn nrt_client_config_set_backoff_factor(
 
 #[no_mangle]
 pub extern "C" fn nrt_client_config_set_retries_max(config: *mut ClientConfig, retries: u32) {
-    if config.is_null() {
-        return;
-    }
-
     if let Some(config) = unsafe { config.as_mut() } {
         config.retries_max = Some(retries);
     }
@@ -196,7 +188,7 @@ pub extern "C" fn nrt_client_config_set_endpoint_traces(
     host: *const c_char,
     port: u16,
 ) {
-    if config.is_null() || host.is_null() {
+    if host.is_null() {
         return;
     }
 
@@ -214,7 +206,7 @@ pub extern "C" fn nrt_client_config_set_product_info(
     product: *const c_char,
     version: *const c_char,
 ) {
-    if config.is_null() || product.is_null() {
+    if product.is_null() {
         return;
     }
 
@@ -233,10 +225,6 @@ pub extern "C" fn nrt_client_config_set_product_info(
 
 #[no_mangle]
 pub extern "C" fn nrt_client_config_set_queue_max(config: *mut ClientConfig, queue_max: usize) {
-    if config.is_null() {
-        return;
-    }
-
     if let Some(config) = unsafe { config.as_mut() } {
         config.queue_max = Some(queue_max);
     }
