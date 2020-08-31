@@ -6,9 +6,46 @@ use std::collections::HashMap;
 use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::ptr;
+use std::time::Duration;
 
 pub struct Span {}
+pub struct ClientConfig {
+    key: String,
+    backoff_factor: Option<Duration>,
+    retries_max: Option<u32>,
+    host: Option<String>,
+    port: Option<u16>,
+    product: Option<String>,
+    version: Option<String>,
+    queue_max: Option<usize>,
+}
 type Attributes = HashMap<String, Value>;
+
+impl From<ClientConfig> for ClientBuilder {
+    fn from(config: ClientConfig) -> ClientBuilder {
+        let mut builder = ClientBuilder::new(&config.key);
+
+        if let Some(backoff_factor) = config.backoff_factor {
+            builder = builder.backoff_factor(backoff_factor);
+        }
+        if let Some(retries_max) = config.retries_max {
+            builder = builder.retries_max(retries_max);
+        }
+        if let Some(host) = config.host {
+            builder = builder.endpoint_traces(&host, config.port);
+        }
+        if let Some(product) = config.product {
+            if let Some(version) = config.version {
+                builder = builder.product_info(&product, &version);
+            }
+        }
+        if let Some(queue_max) = config.queue_max {
+            /* builder = builder.blocking_queue_max(queue_max); */
+        }
+
+        builder
+    }
+}
 
 #[no_mangle]
 pub extern "C" fn nrt_attributes_new() -> *mut Attributes {
@@ -100,14 +137,23 @@ pub extern "C" fn nrt_attributes_destroy(attributes: *mut *mut Attributes) {
 }
 
 #[no_mangle]
-pub extern "C" fn nrt_client_config_new(key: *const c_char) -> *mut ClientBuilder {
+pub extern "C" fn nrt_client_config_new(key: *const c_char) -> *mut ClientConfig {
     if key.is_null() {
         return ptr::null_mut();
     }
 
     if let Ok(key) = unsafe { CStr::from_ptr(key).to_str() } {
-        let builder = ClientBuilder::new(key);
-        return Box::into_raw(Box::new(builder));
+        let config = ClientConfig {
+            key: key.to_string(),
+            backoff_factor: None,
+            retries_max: None,
+            host: None,
+            port: None,
+            product: None,
+            version: None,
+            queue_max: None,
+        };
+        return Box::into_raw(Box::new(config));
     }
 
     ptr::null_mut()
@@ -115,42 +161,89 @@ pub extern "C" fn nrt_client_config_new(key: *const c_char) -> *mut ClientBuilde
 
 #[no_mangle]
 pub extern "C" fn nrt_client_config_set_backoff_factor(
-    config: *mut ClientBuilder,
+    config: *mut ClientConfig,
     backoff_factor: u64,
 ) {
+    if config.is_null() {
+        return;
+    }
+
+    if let Some(config) = unsafe { config.as_mut() } {
+        config.backoff_factor = Some(Duration::from_millis(backoff_factor));
+    }
 }
 
 #[no_mangle]
-pub extern "C" fn nrt_client_config_set_retries_max(config: *mut ClientBuilder, retries: u32) {}
+pub extern "C" fn nrt_client_config_set_retries_max(config: *mut ClientConfig, retries: u32) {
+    if config.is_null() {
+        return;
+    }
+
+    if let Some(config) = unsafe { config.as_mut() } {
+        config.retries_max = Some(retries);
+    }
+}
 
 #[no_mangle]
 pub extern "C" fn nrt_client_config_set_endpoint_traces(
-    config: *mut ClientBuilder,
+    config: *mut ClientConfig,
     host: *const c_char,
     port: u16,
 ) {
+    if config.is_null() || host.is_null() {
+        return;
+    }
+
+    if let Some(config) = unsafe { config.as_mut() } {
+        if let Ok(host) = unsafe { CStr::from_ptr(host).to_str() } {
+            config.host = Some(host.to_string());
+            config.port = if port == 0 { None } else { Some(port) };
+        }
+    }
 }
 
 #[no_mangle]
 pub extern "C" fn nrt_client_config_set_product_info(
-    config: *mut ClientBuilder,
+    config: *mut ClientConfig,
     product: *const c_char,
     version: *const c_char,
 ) {
+    if config.is_null() || product.is_null() {
+        return;
+    }
+
+    if let Some(config) = unsafe { config.as_mut() } {
+        if let Ok(product) = unsafe { CStr::from_ptr(product).to_str() } {
+            config.product = Some(product.to_string());
+        }
+
+        if !version.is_null() {
+            if let Ok(version) = unsafe { CStr::from_ptr(version).to_str() } {
+                config.version = Some(version.to_string());
+            }
+        }
+    }
 }
 
 #[no_mangle]
-pub extern "C" fn nrt_client_config_set_queue_max(config: *mut ClientBuilder, queue_max: usize) {}
-
-#[no_mangle]
-pub extern "C" fn nrt_client_config_destroy(config: *mut *mut ClientBuilder) {
+pub extern "C" fn nrt_client_config_set_queue_max(config: *mut ClientConfig, queue_max: usize) {
     if config.is_null() {
         return;
     }
-    if unsafe { *config }.is_null() {
+
+    if let Some(config) = unsafe { config.as_mut() } {
+        config.queue_max = Some(queue_max);
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn nrt_client_config_destroy(config: *mut *mut ClientConfig) {
+    if config.is_null() {
         return;
     }
     unsafe { Box::from_raw(*config) };
+
+    unsafe { *config = ptr::null_mut() };
 }
 
 #[no_mangle]
