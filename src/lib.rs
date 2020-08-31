@@ -130,10 +130,16 @@ pub extern "C" fn nrt_attributes_destroy(attributes: *mut *mut Attributes) {
     if attributes.is_null() {
         return;
     }
-    if unsafe { *attributes }.is_null() {
+
+    let mut attributes = unsafe { *attributes };
+
+    if attributes.is_null() {
         return;
     }
-    unsafe { Box::from_raw(*attributes) };
+
+    unsafe { Box::from_raw(attributes) };
+
+    attributes = ptr::null_mut();
 }
 
 #[no_mangle]
@@ -241,9 +247,16 @@ pub extern "C" fn nrt_client_config_destroy(config: *mut *mut ClientConfig) {
     if config.is_null() {
         return;
     }
-    unsafe { Box::from_raw(*config) };
 
-    unsafe { *config = ptr::null_mut() };
+    let mut config = unsafe { *config };
+
+    if config.is_null() {
+        return;
+    }
+
+    unsafe { Box::from_raw(config) };
+
+    config = ptr::null_mut();
 }
 
 #[no_mangle]
