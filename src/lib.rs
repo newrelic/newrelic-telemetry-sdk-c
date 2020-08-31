@@ -157,9 +157,11 @@ pub extern "C" fn nrt_span_batch_destroy(batch: *mut *mut SpanBatch) {}
 
 #[no_mangle]
 pub extern "C" fn nrt_client_new(key: *const c_char) -> *mut Client {
-    if let Ok(api_key) = unsafe { CStr::from_ptr(key).to_str() } {
-        let client = ClientBuilder::new(api_key).build();
-        return Box::into_raw(Box::new(client));
+    if !key.is_null() {
+        if let Ok(api_key) = unsafe { CStr::from_ptr(key).to_str() } {
+            let client = ClientBuilder::new(api_key).build();
+            return Box::into_raw(Box::new(client));
+        }
     }
     ptr::null_mut()
 }
