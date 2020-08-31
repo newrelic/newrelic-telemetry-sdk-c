@@ -25,4 +25,13 @@ int main() {
   nrt_client_config_set_product_info(cfg, "Example", "1.0");
   nrt_client_config_set_queue_max(cfg, 200);
   nrt_client_config_destroy(&cfg);
+
+  /* Call with NULL values. */
+  nrt_client_config_new(NULL);
+  nrt_client_config_set_backoff_factor(NULL, 1000);
+  nrt_client_config_set_retries_max(NULL, 5);
+  nrt_client_config_set_endpoint_traces(NULL, NULL, 31339);
+  nrt_client_config_set_product_info(NULL, NULL, NULL);
+  nrt_client_config_set_queue_max(NULL, 200);
+  nrt_client_config_destroy(NULL);
 }
