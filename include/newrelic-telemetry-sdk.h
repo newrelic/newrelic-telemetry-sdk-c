@@ -3,10 +3,16 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * A configuration object needed to initialize a nrt_client_t.
+ */
+typedef struct _nrt_client_config_t nrt_client_config_t;
 
 /**
  * A Client is capable of both queuing and sending span and metrics batches to
@@ -225,12 +231,132 @@ bool nrt_span_batch_record(nrt_span_batch_t* batch, nrt_span_t** span);
 void nrt_span_batch_destroy(nrt_span_batch_t** batch);
 
 /**
- * Create a new client.
+ * Create a new client configuration with an Insights API key.
+ *
+ * Other values will be set to defaults:
+ *  - The default backoff factor will be 5 seconds.
+ *  - The default maximum of retries is 8.
+ *  - The default trace endpoint is * https://trace-api.newrelic.com/trace/v1`
+ *    on port 80.
+ *  - By default, product information is empty.
+ *  - By default, no more than 100 batches are sent in one go.
  *
  * @param key an Insights API key
+ * @return a client configuration
+ */
+nrt_client_config_t* nrt_client_config_new(const char* key);
+
+/**
+ * Configures a backoff factor.
+ *
+ * If a request fails, the SDK retries the request at increasing intervals
+ * and eventually drops data if the request cannot be completed.
+ *
+ * The amount of time to wait after a request can be computed using this
+ * logic:
+ *
+ *   `backoff_factor * (2 ^ (number_of_retries - 1))`
+ *
+ * For a backoff factor of 1 second, and a maximum of 6 retries,
+ * the retry delay interval should follow a pattern of [0, 1, 2, 4, 8, 16].
+ *
+ * See the
+ * [specification](https://github.com/newrelic/newrelic-telemetry-sdk-specs/blob/master/communication.md#graceful-degradation)
+ * for further details.
+ *
+ * @param config a client configuration
+ * @param backoff_factor a time duration used in the backoff calculation
+ */
+void nrt_client_config_set_backoff_factor(nrt_client_config_t* config,
+                                          nrt_time_t backoff_factor);
+
+/**
+ * Configures the maximum numbers of retries.
+ *
+ * If a request fails, the SDK retries the request at increasing intervals
+ * and eventually drops data if the request cannot be completed.
+ *
+ * If zero is given as a maximum, no retries will be made for failed
+ * requests.
+ *
+ * For a backoff factor of 1 second, and a maximum of 6 retries, the retry
+ * delay interval should follow a pattern of [0, 1, 2, 4, 8, 16].
+ *
+ * See the
+ * [specification](https://github.com/newrelic/newrelic-telemetry-sdk-specs/blob/master/communication.md#graceful-degradation)
+ * for further details.
+ *
+ * @param config a client configuration
+ * @param retries the maximum number of retries for failed requests
+ */
+void nrt_client_config_set_retries_max(nrt_client_config_t* config,
+                                       uint32_t retries);
+
+/**
+ * Configure the ingest host for traces.
+ *
+ * Overrides the default ingest host for traces to facilitate communication
+ * with alternative New Relic backends.
+ *
+ * @param config a client configuration
+ * @param host the name of the ingest host
+ * @param port the port of the ingest host. Pass `0` to indicate usage of the
+ * default port.
+ */
+void nrt_client_config_set_endpoint_traces(nrt_client_config_t* config,
+                                           const char* host,
+                                           uint16_t port);
+
+/**
+ * Configure a product and version.
+ *
+ * The specified product and version will be appended to the `User-Agent`
+ * header of payloads.
+ *
+ * See the
+ * [specification](https://github.com/newrelic/newrelic-telemetry-sdk-specs/blob/master/communication.md#user-agent)
+ * for further details.
+ *
+ * @param config a client configuration
+ * @param product a product name
+ * @param version a product version. Pass NULL to use no version.
+ */
+void nrt_client_config_set_product_info(nrt_client_config_t* config,
+                                        const char* product,
+                                        const char* version);
+
+/**
+ * Configure the maximum of batches sent in one go.
+ *
+ * If the number of batches queued exceeds the maximum given here, the
+ * addditional batches will be dropped. This mechanism avoids accumulating
+ * back pressure.
+ *
+ * @param config a client configuration
+ * @param queue_max the maximum queue size
+ */
+void nrt_client_config_set_queue_max(nrt_client_config_t* config,
+                                     size_t queue_max);
+
+/**
+ * Destroy a client configuration.
+ *
+ * The passed pointer will be set to NULL.
+ *
+ * @param config a client configuration
+ */
+void nrt_client_config_destroy(nrt_client_config_t** config);
+
+/**
+ * Create a new client.
+ *
+ * The passed configuration will be destroyed and the passed pointer will
+ * always be set to NULL.
+ *
+ * @param config a client configuration
  * @return a client
  */
-nrt_client_t* nrt_client_new(const char* key);
+nrt_client_t* nrt_client_new(nrt_client_config_t** config);
 
 /**
  * Send a span batch.
