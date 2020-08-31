@@ -1,4 +1,5 @@
 #include "newrelic-telemetry-sdk.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef OS_WINDOWS
@@ -57,7 +58,9 @@ int main() {
 
   /* Queue the span batch */
   nrt_client_send(client, &batch);
+  assert(batch == NULL);
 
   /* Wait for the batch to be sent and shut down the client. */
   nrt_client_shutdown(&client);
+  assert(client == NULL);
 }
