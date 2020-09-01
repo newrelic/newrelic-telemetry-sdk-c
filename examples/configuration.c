@@ -1,4 +1,5 @@
 #include "newrelic-telemetry-sdk.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -19,12 +20,14 @@ int main() {
 
   /* Initialize a configuration use all options. */
   cfg = nrt_client_config_new(api_key);
+  assert(cfg);
   nrt_client_config_set_backoff_factor(cfg, 1000);
   nrt_client_config_set_retries_max(cfg, 5);
   nrt_client_config_set_endpoint_traces(cfg, "localhost", 31339);
   nrt_client_config_set_product_info(cfg, "Example", "1.0");
   nrt_client_config_set_queue_max(cfg, 200);
   nrt_client_config_destroy(&cfg);
+  assert(NULL == cfg);
 
   /* Call with NULL values. */
   nrt_client_config_new(NULL);
