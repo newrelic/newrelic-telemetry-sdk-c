@@ -326,19 +326,14 @@ pub extern "C" fn nrt_client_config_set_queue_max(config: *mut ClientConfig, que
 
 #[no_mangle]
 pub extern "C" fn nrt_client_config_destroy(config: *mut *mut ClientConfig) {
-    if config.is_null() {
-        return;
+    if !config.is_null() {
+        let c = unsafe { *config };
+        if !c.is_null() {
+            let c = unsafe { Box::from_raw(c) };
+            drop(c);
+            unsafe { *config = ptr::null_mut() };
+        }
     }
-
-    let cfg = unsafe { *config };
-
-    if cfg.is_null() {
-        return;
-    }
-
-    unsafe { Box::from_raw(cfg) };
-
-    unsafe { *config = ptr::null_mut() };
 }
 
 #[no_mangle]
