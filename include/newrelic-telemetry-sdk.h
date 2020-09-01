@@ -54,6 +54,25 @@ typedef uint64_t nrt_time_t;
  */
 nrt_attributes_t* nrt_attributes_new();
 
+typedef enum {
+    NRT_LOG_ERROR = 0,
+    NRT_LOG_WARN = 1,
+    NRT_LOG_INFO = 2,
+    NRT_LOG_DEBUG = 3,
+} nrt_log_level_t;
+
+/**
+ * Initialize logging.
+ *
+ * This will log message of the given level (and higher) to the file of the
+ * given name. 
+ *
+ * @param level the log level
+ * @param key the name of the file to log to. To log to the stdout or stderr,
+ * specify `stdout` or `stderr.
+ */
+bool nrt_log_init(nrt_log_level_t level, const char* filename);
+
 /**
  * Add an int attribute to an attribute collection
  *

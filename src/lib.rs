@@ -2,8 +2,10 @@ use log;
 use newrelic_telemetry::attribute::Value;
 use newrelic_telemetry::span::SpanBatch;
 use newrelic_telemetry::{blocking::Client, ClientBuilder};
+use simplelog::{Config, LevelFilter, TermLogError, TermLogger, TerminalMode, WriteLogger};
 use std::collections::HashMap;
 use std::ffi::CStr;
+use std::fs::File;
 use std::os::raw::c_char;
 use std::ptr;
 use std::time::Duration;
@@ -44,6 +46,46 @@ impl From<&ClientConfig> for ClientBuilder {
 
         builder
     }
+}
+
+#[no_mangle]
+pub extern "C" fn nrt_log_init(level: i32, filename: *const c_char) -> bool {
+    if filename.is_null() {
+        return false;
+    }
+
+    let level = match level {
+        0 => LevelFilter::Error,
+        1 => LevelFilter::Warn,
+        2 => LevelFilter::Info,
+        3 => LevelFilter::Debug,
+        _ => LevelFilter::Off,
+    };
+
+    if let Ok(filename) = unsafe { CStr::from_ptr(filename).to_str() } {
+        match filename {
+            "stdout" => {
+                if let Ok(_) = TermLogger::init(level, Config::default(), TerminalMode::Stdout) {
+                    return true;
+                }
+            }
+            "stderr" => {
+                if let Ok(_) = TermLogger::init(level, Config::default(), TerminalMode::Stderr) {
+                    return true;
+                }
+            }
+            filename => {
+                if let Ok(file) = File::create(filename) {
+                    if let Ok(_) = WriteLogger::init(level, Config::default(), file) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+    }
+
+    false
 }
 
 #[no_mangle]
