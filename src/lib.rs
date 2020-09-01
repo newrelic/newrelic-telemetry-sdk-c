@@ -35,9 +35,7 @@ impl From<ClientConfig> for ClientBuilder {
             builder = builder.endpoint_traces(&host, config.port);
         }
         if let Some(product) = config.product {
-            if let Some(version) = config.version {
-                builder = builder.product_info(&product, &version);
-            }
+            builder = builder.product_info(&product, &config.version.unwrap_or("".to_string()));
         }
         if let Some(queue_max) = config.queue_max {
             builder = builder.blocking_queue_max(queue_max);
