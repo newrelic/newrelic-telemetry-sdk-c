@@ -39,8 +39,10 @@ if (WIN32)
     set(OS_LIBS Crypt32 Ncrypt Secur32 Userenv Ws2_32)
 else()
     find_package(Threads)
+    find_package(OpenSSL)
+    find_package(ZLIB)
 
-    set(OS_LIBS dl m ${CMAKE_THREAD_LIBS_INIT})
+    set(OS_LIBS dl m ${CMAKE_THREAD_LIBS_INIT} ${ZLIB_LIBRARIES} ${OPENSSL_LIBRARIES})
 endif()
 
 #
