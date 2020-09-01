@@ -330,15 +330,15 @@ pub extern "C" fn nrt_client_config_destroy(config: *mut *mut ClientConfig) {
         return;
     }
 
-    let mut config = unsafe { *config };
+    let cfg = unsafe { *config };
 
-    if config.is_null() {
+    if cfg.is_null() {
         return;
     }
 
-    unsafe { Box::from_raw(config) };
+    unsafe { Box::from_raw(cfg) };
 
-    config = ptr::null_mut();
+    unsafe { *config = ptr::null_mut() };
 }
 
 #[no_mangle]
