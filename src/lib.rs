@@ -2,7 +2,7 @@ use log;
 use newrelic_telemetry::attribute::Value;
 use newrelic_telemetry::span::SpanBatch;
 use newrelic_telemetry::{blocking::Client, ClientBuilder};
-use simplelog::{Config, LevelFilter, TermLogError, TermLogger, TerminalMode, WriteLogger};
+use simplelog::{Config, LevelFilter, TermLogger, TerminalMode, WriteLogger};
 use std::collections::HashMap;
 use std::ffi::CStr;
 use std::fs::File;
@@ -174,106 +174,6 @@ pub extern "C" fn nrt_attributes_destroy(attributes: *mut *mut Attributes) {
             let a = unsafe { Box::from_raw(a) };
             drop(a);
             unsafe { *attributes = ptr::null_mut() };
-        }
-    }
-}
-
-#[no_mangle]
-pub extern "C" fn nrt_client_config_new(key: *const c_char) -> *mut ClientConfig {
-    if key.is_null() {
-        return ptr::null_mut();
-    }
-
-    if let Ok(key) = unsafe { CStr::from_ptr(key).to_str() } {
-        let config = ClientConfig {
-            key: key.to_string(),
-            backoff_factor: None,
-            retries_max: None,
-            host: None,
-            port: None,
-            product: None,
-            version: None,
-            queue_max: None,
-        };
-        return Box::into_raw(Box::new(config));
-    }
-
-    ptr::null_mut()
-}
-
-#[no_mangle]
-pub extern "C" fn nrt_client_config_set_backoff_factor(
-    config: *mut ClientConfig,
-    backoff_factor: u64,
-) {
-    if let Some(config) = unsafe { config.as_mut() } {
-        config.backoff_factor = Some(Duration::from_millis(backoff_factor));
-    }
-}
-
-#[no_mangle]
-pub extern "C" fn nrt_client_config_set_retries_max(config: *mut ClientConfig, retries: u32) {
-    if let Some(config) = unsafe { config.as_mut() } {
-        config.retries_max = Some(retries);
-    }
-}
-
-#[no_mangle]
-pub extern "C" fn nrt_client_config_set_endpoint_traces(
-    config: *mut ClientConfig,
-    host: *const c_char,
-    port: u16,
-) {
-    if host.is_null() {
-        return;
-    }
-
-    if let Some(config) = unsafe { config.as_mut() } {
-        if let Ok(host) = unsafe { CStr::from_ptr(host).to_str() } {
-            config.host = Some(host.to_string());
-            config.port = if port == 0 { None } else { Some(port) };
-        }
-    }
-}
-
-#[no_mangle]
-pub extern "C" fn nrt_client_config_set_product_info(
-    config: *mut ClientConfig,
-    product: *const c_char,
-    version: *const c_char,
-) {
-    if product.is_null() {
-        return;
-    }
-
-    if let Some(config) = unsafe { config.as_mut() } {
-        if let Ok(product) = unsafe { CStr::from_ptr(product).to_str() } {
-            config.product = Some(product.to_string());
-        }
-
-        if !version.is_null() {
-            if let Ok(version) = unsafe { CStr::from_ptr(version).to_str() } {
-                config.version = Some(version.to_string());
-            }
-        }
-    }
-}
-
-#[no_mangle]
-pub extern "C" fn nrt_client_config_set_queue_max(config: *mut ClientConfig, queue_max: usize) {
-    if let Some(config) = unsafe { config.as_mut() } {
-        config.queue_max = Some(queue_max);
-    }
-}
-
-#[no_mangle]
-pub extern "C" fn nrt_client_config_destroy(config: *mut *mut ClientConfig) {
-    if !config.is_null() {
-        let c = unsafe { *config };
-        if !c.is_null() {
-            let c = unsafe { Box::from_raw(c) };
-            drop(c);
-            unsafe { *config = ptr::null_mut() };
         }
     }
 }
