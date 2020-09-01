@@ -40,7 +40,7 @@ impl From<ClientConfig> for ClientBuilder {
             }
         }
         if let Some(queue_max) = config.queue_max {
-            /* builder = builder.blocking_queue_max(queue_max); */
+            builder = builder.blocking_queue_max(queue_max);
         }
 
         builder
@@ -131,15 +131,15 @@ pub extern "C" fn nrt_attributes_destroy(attributes: *mut *mut Attributes) {
         return;
     }
 
-    let mut attributes = unsafe { *attributes };
+    let attrs = unsafe { *attributes };
 
-    if attributes.is_null() {
+    if attrs.is_null() {
         return;
     }
 
-    unsafe { Box::from_raw(attributes) };
+    unsafe { Box::from_raw(attrs) };
 
-    attributes = ptr::null_mut();
+    unsafe { *attributes = ptr::null_mut() };
 }
 
 #[no_mangle]
@@ -236,15 +236,15 @@ pub extern "C" fn nrt_client_config_destroy(config: *mut *mut ClientConfig) {
         return;
     }
 
-    let mut config = unsafe { *config };
+    let cfg = unsafe { *config };
 
-    if config.is_null() {
+    if cfg.is_null() {
         return;
     }
 
-    unsafe { Box::from_raw(config) };
+    unsafe { Box::from_raw(cfg) };
 
-    config = ptr::null_mut();
+    unsafe { *config = ptr::null_mut() };
 }
 
 #[no_mangle]
