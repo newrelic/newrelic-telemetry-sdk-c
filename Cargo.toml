@@ -10,3 +10,4 @@ crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
 newrelic-telemetry = { path = "vendor/newrelic-telemetry-sdk-rust", features = ["blocking"] }
+log = "0.4.11"

@@ -1,3 +1,4 @@
+use log;
 use newrelic_telemetry::attribute::Value;
 use newrelic_telemetry::span::SpanBatch;
 use newrelic_telemetry::{blocking::Client, ClientBuilder};
@@ -162,7 +163,9 @@ pub extern "C" fn nrt_client_new(key: *const c_char) -> *mut Client {
             let result = ClientBuilder::new(api_key).build_blocking();
             match result {
                 Ok(client) => return Box::into_raw(Box::new(client)),
-                Err(_err) => {}
+                Err(err) => {
+                    log::error!("unable to create client: {}", err.to_string());
+                }
             }
         }
     }
