@@ -48,7 +48,7 @@ endif()
 #
 # Build examples
 #
-set(EXAMPLES simple trace_api destroy_attributes)
+set(EXAMPLES simple configuration trace_api attributes)
 
 if (ENABLE_EXAMPLES)
     foreach (EXAMPLE ${EXAMPLES})
