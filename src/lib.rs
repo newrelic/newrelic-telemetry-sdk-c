@@ -126,19 +126,14 @@ pub extern "C" fn nrt_attributes_set_bool(
 
 #[no_mangle]
 pub extern "C" fn nrt_attributes_destroy(attributes: *mut *mut Attributes) {
-    if attributes.is_null() {
-        return;
+    if !attributes.is_null() {
+        let a = unsafe { *attributes };
+        if !a.is_null() {
+            let a = unsafe { Box::from_raw(a) };
+            drop(a);
+            unsafe { *attributes = ptr::null_mut() };
+        }
     }
-
-    let attrs = unsafe { *attributes };
-
-    if attrs.is_null() {
-        return;
-    }
-
-    unsafe { Box::from_raw(attrs) };
-
-    unsafe { *attributes = ptr::null_mut() };
 }
 
 #[no_mangle]
@@ -231,19 +226,14 @@ pub extern "C" fn nrt_client_config_set_queue_max(config: *mut ClientConfig, que
 
 #[no_mangle]
 pub extern "C" fn nrt_client_config_destroy(config: *mut *mut ClientConfig) {
-    if config.is_null() {
-        return;
+    if !config.is_null() {
+        let c = unsafe { *config };
+        if !c.is_null() {
+            let c = unsafe { Box::from_raw(c) };
+            drop(c);
+            unsafe { *config = ptr::null_mut() };
+        }
     }
-
-    let cfg = unsafe { *config };
-
-    if cfg.is_null() {
-        return;
-    }
-
-    unsafe { Box::from_raw(cfg) };
-
-    unsafe { *config = ptr::null_mut() };
 }
 
 #[no_mangle]
