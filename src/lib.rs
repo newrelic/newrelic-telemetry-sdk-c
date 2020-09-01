@@ -159,12 +159,10 @@ pub extern "C" fn nrt_span_batch_destroy(batch: *mut *mut SpanBatch) {}
 pub extern "C" fn nrt_client_new(key: *const c_char) -> *mut Client {
     if !key.is_null() {
         if let Ok(api_key) = unsafe { CStr::from_ptr(key).to_str() } {
-            let result = Client::new(ClientBuilder::new(api_key));
+            let result = ClientBuilder::new(api_key).build_blocking();
             match result {
                 Ok(client) => return Box::into_raw(Box::new(client)),
-                Err(_err) => {
-                    // How should this be logged?
-                }
+                Err(_err) => {}
             }
         }
     }
@@ -173,12 +171,10 @@ pub extern "C" fn nrt_client_new(key: *const c_char) -> *mut Client {
 
 #[no_mangle]
 pub extern "C" fn nrt_client_send(client: *mut Client, batch: *mut *mut SpanBatch) -> bool {
-    if !client.is_null() {
-        let client = unsafe { &*client };
-        if !batch.is_null() {
-            let b = unsafe { *batch };
+    if let Some(client) = unsafe { client.as_mut() } {
+        if let Some(b) = unsafe { batch.as_mut() } {
             if !b.is_null() {
-                client.send_spans(*unsafe { Box::from_raw(b) });
+                client.send_spans(unsafe { *Box::from_raw(*b) });
                 unsafe { *batch = ptr::null_mut() };
                 return true;
             }
@@ -192,7 +188,7 @@ pub extern "C" fn nrt_client_shutdown(client: *mut *mut Client) {
     if !client.is_null() {
         let c = unsafe { *client };
         if !c.is_null() {
-            let c = unsafe { *Box::from_raw(c) };
+            let c = unsafe { Box::from_raw(c) };
             c.shutdown();
             unsafe { *client = ptr::null_mut() };
         }
@@ -204,7 +200,7 @@ pub extern "C" fn nrt_client_destroy(client: *mut *mut Client) {
     if !client.is_null() {
         let c = unsafe { *client };
         if !c.is_null() {
-            let c = unsafe { *Box::from_raw(c) };
+            let c = unsafe { Box::from_raw(c) };
             drop(c);
             unsafe { *client = ptr::null_mut() };
         }
