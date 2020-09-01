@@ -19,8 +19,12 @@ int main() {
   /* Initialize a logger. */
   nrt_log_init(NRT_LOG_DEBUG, "./nrt.log");
 
+  /* Initialize a configuration with an invalid host. */
+  nrt_client_config_t* cfg = nrt_client_config_new(api_key);
+  nrt_client_config_set_endpoint_traces(cfg, "host:80", 80);
+
   /* Initialize a new client with the given API key. */
-  nrt_client_t* client = nrt_client_new(api_key);
+  nrt_client_t* client = nrt_client_new(&cfg);
 
   /* Wait for the batch to be sent and shut down the client. */
   nrt_client_shutdown(&client);
