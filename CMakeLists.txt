@@ -39,8 +39,10 @@ if (WIN32)
     set(OS_LIBS Crypt32 Ncrypt Secur32 Userenv Ws2_32)
 else()
     find_package(Threads)
+    find_package(OpenSSL)
+    find_package(ZLIB)
 
-    set(OS_LIBS dl m ${CMAKE_THREAD_LIBS_INIT})
+    set(OS_LIBS dl m ${CMAKE_THREAD_LIBS_INIT} ${ZLIB_LIBRARIES} ${OPENSSL_LIBRARIES})
 endif()
 
 #
@@ -68,7 +70,10 @@ if (ENABLE_EXAMPLES AND ENABLE_TESTS)
         if (WIN32)
             add_test(NAME test_${EXAMPLE}
                      COMMAND $<TARGET_FILE:example_${EXAMPLE}>)
-        else()
+        elseif (APPLE)
+            add_test(NAME test_${EXAMPLE}
+                     COMMAND $<TARGET_FILE:example_${EXAMPLE}>)
+        else ()
             add_test(NAME test_${EXAMPLE}
                      COMMAND valgrind --leak-check=full 
                                       --error-exitcode=1 

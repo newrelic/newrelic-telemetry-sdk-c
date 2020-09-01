@@ -1,4 +1,5 @@
 #include "newrelic-telemetry-sdk.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef OS_WINDOWS
@@ -19,11 +20,11 @@ int main() {
     exit(1);
   }
 
-  /* Initialize a new sender with the given API key. */
-  nrt_sender_t* sender = nrt_sender_new(api_key);
+  /* Initialize a new client with the given API key. */
+  nrt_client_t* client = nrt_client_new(api_key);
 
   /* Create an empty span batch */
-   nrt_span_batch_t* batch = nrt_span_batch_new();
+  nrt_span_batch_t* batch = nrt_span_batch_new();
 
   /* Create a span and add it to the batch */
   {
@@ -56,8 +57,10 @@ int main() {
   }
 
   /* Queue the span batch */
-  nrt_sender_send(sender, &batch);
+  nrt_client_send(client, &batch);
+  assert(batch == NULL);
 
-  /* Wait for the batch to be sent and shut down the sender. */
-  nrt_sender_shutdown(&sender);
+  /* Wait for the batch to be sent and shut down the client. */
+  nrt_client_shutdown(&client);
+  assert(client == NULL);
 }

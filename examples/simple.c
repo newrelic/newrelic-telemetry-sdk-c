@@ -14,9 +14,9 @@ int main() {
     exit(1);
   }
 
-  /* Initialize a new sender with the given API key. */
-  nrt_sender_t* sender = nrt_sender_new(api_key);
+  /* Initialize a new client with the given API key. */
+  nrt_client_t* client = nrt_client_new(api_key);
 
-  /* Wait for the batch to be sent and shut down the sender. */
-  nrt_sender_shutdown(&sender);
+  /* Wait for the batch to be sent and shut down the client. */
+  nrt_client_shutdown(&client);
 }

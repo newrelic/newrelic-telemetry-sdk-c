@@ -1,11 +1,12 @@
+use log;
 use newrelic_telemetry::attribute::Value;
+use newrelic_telemetry::span::SpanBatch;
+use newrelic_telemetry::{blocking::Client, ClientBuilder};
 use std::collections::HashMap;
 use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::ptr;
 
-pub struct Sender {}
-pub struct SpanBatch {}
 pub struct Span {}
 type Attributes = HashMap<String, Value>;
 
@@ -156,17 +157,55 @@ pub extern "C" fn nrt_span_batch_record(batch: *mut SpanBatch, span: *mut *mut S
 pub extern "C" fn nrt_span_batch_destroy(batch: *mut *mut SpanBatch) {}
 
 #[no_mangle]
-pub extern "C" fn nrt_sender_new(key: *const c_char) -> *mut Sender {
+pub extern "C" fn nrt_client_new(key: *const c_char) -> *mut Client {
+    if !key.is_null() {
+        if let Ok(api_key) = unsafe { CStr::from_ptr(key).to_str() } {
+            let result = ClientBuilder::new(api_key).build_blocking();
+            match result {
+                Ok(client) => return Box::into_raw(Box::new(client)),
+                Err(err) => {
+                    log::error!("unable to create client: {}", err.to_string());
+                }
+            }
+        }
+    }
     ptr::null_mut()
 }
 
 #[no_mangle]
-pub extern "C" fn nrt_sender_send(key: *const c_char, batch: *mut *mut SpanBatch) -> bool {
+pub extern "C" fn nrt_client_send(client: *mut Client, batch: *mut *mut SpanBatch) -> bool {
+    if let Some(client) = unsafe { client.as_mut() } {
+        if let Some(b) = unsafe { batch.as_mut() } {
+            if !b.is_null() {
+                client.send_spans(unsafe { *Box::from_raw(*b) });
+                unsafe { *batch = ptr::null_mut() };
+                return true;
+            }
+        }
+    }
     false
 }
 
 #[no_mangle]
-pub extern "C" fn nrt_sender_shutdown(sender: *mut *mut Sender) {}
+pub extern "C" fn nrt_client_shutdown(client: *mut *mut Client) {
+    if !client.is_null() {
+        let c = unsafe { *client };
+        if !c.is_null() {
+            let c = unsafe { Box::from_raw(c) };
+            c.shutdown();
+            unsafe { *client = ptr::null_mut() };
+        }
+    }
+}
 
 #[no_mangle]
-pub extern "C" fn nrt_sender_destroy(sender: *mut *mut Sender) {}
+pub extern "C" fn nrt_client_destroy(client: *mut *mut Client) {
+    if !client.is_null() {
+        let c = unsafe { *client };
+        if !c.is_null() {
+            let c = unsafe { Box::from_raw(c) };
+            drop(c);
+            unsafe { *client = ptr::null_mut() };
+        }
+    }
+}
