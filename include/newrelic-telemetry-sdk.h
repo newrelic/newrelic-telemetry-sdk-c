@@ -154,13 +154,39 @@ void nrt_attributes_destroy(nrt_attributes_t** attributes);
  *
  * @param id the span id
  * @param trace_id the trace id
- * @param parent_id the parent id. Passing NULL indicates that the span has no
- * parent.
+ * @param timestamp the timestamp.
  * @return a span
  */
 nrt_span_t* nrt_span_new(const char* id,
                          const char* trace_id,
-                         const char* parent_id);
+                         uint64_t timestamp);
+
+/**
+ * Set the id of a span
+ *
+ * @param span
+ * @param id the unique identifier for the span
+ * @return true if the id could be set
+ */
+bool nrt_span_set_id(nrt_span_t* span, const char* id);
+
+/**
+ * Set the trace_id of a span
+ *
+ * @param span
+ * @param trace_id the trace_id for the span
+ * @return true if the trace_id could be set
+ */
+bool nrt_span_set_trace_id(nrt_span_t* span, const char* trace_id);
+
+/**
+ * Set the start timestamp for a span
+ *
+ * @param span
+ * @param timestamp the start timestamp for the span in Epoch milliseconds
+ * @return true if the start timestamp could be set
+ */
+bool nrt_span_set_timestamp(nrt_span_t* span, nrt_time_t timestamp);
 
 /**
  * Set the name of a span
@@ -181,13 +207,13 @@ bool nrt_span_set_name(nrt_span_t* span, const char* name);
 bool nrt_span_set_service_name(nrt_span_t* span, const char* service_name);
 
 /**
- * Set the start timestamp for a span
+ * Set the parent_id of a span
  *
  * @param span
- * @param timestamp the start timestamp for the span in Epoch milliseconds
- * @return true if the start timestamp could be set
+ * @param parent_id the parent_id for the span
+ * @return true if the parent_id could be set
  */
-bool nrt_span_set_timestamp(nrt_span_t* span, nrt_time_t timestamp);
+bool nrt_span_set_parent_id(nrt_span_t* span, const char* parent_id);
 
 /**
  * Set the duration for a span

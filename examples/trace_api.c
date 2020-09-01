@@ -42,11 +42,11 @@ int main() {
 #endif
 
     nrt_span_t* span
-        = nrt_span_new("e9f54a2c322d7578", "1b1bf29379951c1d", NULL);
+        = nrt_span_new("e9f54a2c322d7578", "1b1bf29379951c1d", time_ms);
     nrt_span_set_name(span, "Root span");
-    nrt_span_set_service_name(span, "Telemetry Application");
-    nrt_span_set_timestamp(span, time_ms);
     nrt_span_set_duration(span, 2000);
+    nrt_span_set_parent_id(span, "parent_id");
+    nrt_span_set_service_name(span, "Telemetry Application");
 
     nrt_attributes_t* attrs = nrt_attributes_new();
     nrt_attributes_set_int(attrs, "int", -6);

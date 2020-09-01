@@ -1,5 +1,6 @@
 use log;
 use newrelic_telemetry::attribute::Value;
+use newrelic_telemetry::span::Span;
 use newrelic_telemetry::span::SpanBatch;
 use newrelic_telemetry::{blocking::Client, ClientBuilder};
 use simplelog::{Config, LevelFilter, TermLogger, TerminalMode, WriteLogger};
@@ -10,7 +11,6 @@ use std::os::raw::c_char;
 use std::ptr;
 use std::time::Duration;
 
-pub struct Span {}
 pub struct ClientConfig {
     key: String,
     backoff_factor: Option<Duration>,
@@ -283,28 +283,104 @@ pub extern "C" fn nrt_client_config_destroy(config: *mut *mut ClientConfig) {
 pub extern "C" fn nrt_span_new(
     id: *const c_char,
     trace_id: *const c_char,
-    parent_id: *const c_char,
+    timestamp: u64,
 ) -> *mut Span {
+    if !id.is_null() || !trace_id.is_null() {
+        if let Ok(id) = unsafe { CStr::from_ptr(id).to_str() } {
+            if let Ok(trace_id) = unsafe { CStr::from_ptr(trace_id).to_str() } {
+                let span = Span::new(id, trace_id, timestamp);
+                return Box::into_raw(Box::new(span));
+            }
+        }
+    }
+
     ptr::null_mut()
 }
 
 #[no_mangle]
-pub extern "C" fn nrt_span_set_name(span: *mut Span, name: *const c_char) -> bool {
+pub extern "C" fn nrt_span_set_id(span: *mut Span, id: *const c_char) -> bool {
+    if !span.is_null() || !id.is_null() {
+        if let Some(span) = unsafe { span.as_mut() } {
+            if let Ok(id) = unsafe { CStr::from_ptr(id).to_str() } {
+                span.set_id(id);
+                return true;
+            }
+        }
+    }
     false
 }
 
 #[no_mangle]
-pub extern "C" fn nrt_span_set_service_name(span: *mut Span, service_name: *const c_char) -> bool {
+pub extern "C" fn nrt_span_set_trace_id(span: *mut Span, trace_id: *const c_char) -> bool {
+    if !span.is_null() || !trace_id.is_null() {
+        if let Some(span) = unsafe { span.as_mut() } {
+            if let Ok(trace_id) = unsafe { CStr::from_ptr(trace_id).to_str() } {
+                span.set_trace_id(trace_id);
+                return true;
+            }
+        }
+    }
     false
 }
 
 #[no_mangle]
 pub extern "C" fn nrt_span_set_timestamp(span: *mut Span, timestamp: u64) -> bool {
+    if !span.is_null() {
+        if let Some(span) = unsafe { span.as_mut() } {
+            span.set_timestamp(timestamp);
+            return true;
+        }
+    }
+    false
+}
+
+#[no_mangle]
+pub extern "C" fn nrt_span_set_name(span: *mut Span, name: *const c_char) -> bool {
+    if !span.is_null() || !name.is_null() {
+        if let Some(span) = unsafe { span.as_mut() } {
+            if let Ok(name) = unsafe { CStr::from_ptr(name).to_str() } {
+                span.set_name(name);
+                return true;
+            }
+        }
+    }
     false
 }
 
 #[no_mangle]
 pub extern "C" fn nrt_span_set_duration(span: *mut Span, duration: u64) -> bool {
+    if !span.is_null() {
+        if let Some(span) = unsafe { span.as_mut() } {
+            span.set_duration(Duration::from_millis(duration));
+            return true;
+        }
+    }
+    false
+}
+
+#[no_mangle]
+pub extern "C" fn nrt_span_set_parent_id(span: *mut Span, parent_id: *const c_char) -> bool {
+    if !span.is_null() || !parent_id.is_null() {
+        if let Some(span) = unsafe { span.as_mut() } {
+            if let Ok(parent_id) = unsafe { CStr::from_ptr(parent_id).to_str() } {
+                span.set_parent_id(parent_id);
+                return true;
+            }
+        }
+    }
+    false
+}
+
+#[no_mangle]
+pub extern "C" fn nrt_span_set_service_name(span: *mut Span, service_name: *const c_char) -> bool {
+    if !span.is_null() || !service_name.is_null() {
+        if let Some(span) = unsafe { span.as_mut() } {
+            if let Ok(service_name) = unsafe { CStr::from_ptr(service_name).to_str() } {
+                span.set_service_name(service_name);
+                return true;
+            }
+        }
+    }
     false
 }
 
@@ -324,7 +400,16 @@ pub extern "C" fn nrt_span_set_attributes(
 }
 
 #[no_mangle]
-pub extern "C" fn nrt_span_destroy(span: *mut *mut Span) {}
+pub extern "C" fn nrt_span_destroy(span: *mut *mut Span) {
+    if !span.is_null() {
+        let s = unsafe { *span };
+        if !s.is_null() {
+            let s = unsafe { Box::from_raw(s) };
+            drop(s);
+            unsafe { *span = ptr::null_mut() };
+        }
+    }
+}
 
 #[no_mangle]
 pub extern "C" fn nrt_span_batch_new() -> *mut SpanBatch {
