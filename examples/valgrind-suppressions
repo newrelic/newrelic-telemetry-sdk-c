@@ -1,0 +1,21 @@
+{
+  <error in Rust's OpenSSL implementation>
+  Memcheck:Param
+  statx(buf)
+  ...
+  fun:*try_statx*
+  ...
+  fun:*find_certs_dirs*
+  ...
+}
+
+{
+  <error in Rust's OpenSSL implementation>
+  Memcheck:Param
+  statx(file_name)
+  ...
+  fun:*try_statx*
+  ...
+  fun:*find_certs_dirs*
+  ...
+}

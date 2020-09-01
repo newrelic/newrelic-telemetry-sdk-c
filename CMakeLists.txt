@@ -77,6 +77,7 @@ if (ENABLE_EXAMPLES AND ENABLE_TESTS)
             add_test(NAME test_${EXAMPLE}
                      COMMAND valgrind --leak-check=full 
                                       --error-exitcode=1 
+                                      --suppressions=${CMAKE_SOURCE_DIR}/examples/valgrind-suppressions
                                       $<TARGET_FILE:example_${EXAMPLE}>)
         endif() 
     endforeach()
