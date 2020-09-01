@@ -21,8 +21,8 @@ pub struct ClientConfig {
 }
 type Attributes = HashMap<String, Value>;
 
-impl From<ClientConfig> for ClientBuilder {
-    fn from(config: ClientConfig) -> ClientBuilder {
+impl From<&ClientConfig> for ClientBuilder {
+    fn from(config: &ClientConfig) -> ClientBuilder {
         let mut builder = ClientBuilder::new(&config.key);
 
         if let Some(backoff_factor) = config.backoff_factor {
@@ -31,11 +31,12 @@ impl From<ClientConfig> for ClientBuilder {
         if let Some(retries_max) = config.retries_max {
             builder = builder.retries_max(retries_max);
         }
-        if let Some(host) = config.host {
+        if let Some(host) = &config.host {
             builder = builder.endpoint_traces(&host, config.port);
         }
-        if let Some(product) = config.product {
-            builder = builder.product_info(&product, &config.version.unwrap_or("".to_string()));
+        if let Some(product) = &config.product {
+            builder =
+                builder.product_info(&product, config.version.as_ref().unwrap_or(&"".to_string()));
         }
         if let Some(queue_max) = config.queue_max {
             builder = builder.blocking_queue_max(queue_max);
@@ -306,10 +307,11 @@ pub extern "C" fn nrt_span_batch_record(batch: *mut SpanBatch, span: *mut *mut S
 pub extern "C" fn nrt_span_batch_destroy(batch: *mut *mut SpanBatch) {}
 
 #[no_mangle]
-pub extern "C" fn nrt_client_new(key: *const c_char) -> *mut Client {
-    if !key.is_null() {
-        if let Ok(api_key) = unsafe { CStr::from_ptr(key).to_str() } {
-            let result = ClientBuilder::new(api_key).build_blocking();
+pub extern "C" fn nrt_client_new(cfg: *mut *mut ClientConfig) -> *mut Client {
+    if !cfg.is_null() {
+        if let Some(config) = unsafe { (*cfg).as_ref() } {
+            let result = Into::<ClientBuilder>::into(config).build_blocking();
+            nrt_client_config_destroy(cfg);
             match result {
                 Ok(client) => return Box::into_raw(Box::new(client)),
                 Err(err) => {
