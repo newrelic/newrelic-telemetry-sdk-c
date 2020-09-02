@@ -25,7 +25,7 @@ int main() {
 
   /* Initialize a configuration. */
   nrt_client_config_t* cfg = nrt_client_config_new(api_key);
-  nrt_client_config_set_endpoint_traces(cfg, "example.com", 0);
+  nrt_client_config_set_endpoint_traces(cfg, "trace-api.newrelic.example", 0);
 
   /* Initialize a new client with the given API key. */
   nrt_client_t* client = nrt_client_new(&cfg);
