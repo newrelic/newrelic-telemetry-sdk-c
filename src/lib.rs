@@ -285,7 +285,7 @@ pub extern "C" fn nrt_span_new(
     trace_id: *const c_char,
     timestamp: u64,
 ) -> *mut Span {
-    if !id.is_null() || !trace_id.is_null() {
+    if !id.is_null() && !trace_id.is_null() {
         if let Ok(id) = unsafe { CStr::from_ptr(id).to_str() } {
             if let Ok(trace_id) = unsafe { CStr::from_ptr(trace_id).to_str() } {
                 let span = Span::new(id, trace_id, timestamp);
@@ -414,6 +414,7 @@ pub extern "C" fn nrt_span_batch_new() -> *mut SpanBatch {
 
 #[no_mangle]
 pub extern "C" fn nrt_span_batch_record(batch: *mut SpanBatch, span: *mut *mut Span) -> bool {
+    // TODO: Remove once functionality is added
     if !span.is_null() {
         nrt_span_destroy(span);
     }
