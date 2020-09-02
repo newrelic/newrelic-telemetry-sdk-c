@@ -48,7 +48,7 @@ endif()
 #
 # Build examples
 #
-set(EXAMPLES simple configuration trace_api attributes log)
+set(EXAMPLES simple configuration trace_api attributes log span)
 
 if (ENABLE_EXAMPLES)
     foreach (EXAMPLE ${EXAMPLES})
