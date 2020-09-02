@@ -59,7 +59,6 @@ int main() {
     nrt_attributes_set_string(attrs, "string", "value");
     nrt_attributes_set_bool(attrs, "bool", true);
     nrt_span_set_attributes(span, &attrs);
-    assert(NULL == attrs);
 
     nrt_span_batch_record(batch, &span);
     assert(NULL == span);
