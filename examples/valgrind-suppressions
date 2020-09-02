@@ -19,3 +19,45 @@
   fun:*find_certs_dirs*
   ...
 }
+
+{
+  <error in tokio runtime builder)>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:*alloc*alloc*
+   ...
+   fun:*tokio*runtime*builder*Builder*build_threaded_runtime*
+   ...
+   fun:nrt_client_new
+
+}
+
+{
+   <tokio>
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   ...
+   fun:pthread_create*
+   fun:*std*sys*unix*thread*Thread*new*
+   ...
+   fun:*tokio*runtime*blocking*pool7*pawner*spawn_thread*
+   ...
+   fun:*tokio*runtime*context*enter*
+}
+
+{
+ <mio ReadinessQueue>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:*alloc*alloc*alloc*
+   ...
+   fun:new<mio::poll::ReadinessNode>
+   fun:*mio*poll1*ReadinessQueue*new*
+   ...
+   fun:*tokio*io*driver*Driver*new*
+   ...
+   fun:*newrelic_telemetry*client*ClientBuilder*build_blocking*
+}
