@@ -285,7 +285,7 @@ pub extern "C" fn nrt_span_new(
     trace_id: *const c_char,
     timestamp: u64,
 ) -> *mut Span {
-    if !id.is_null() || !trace_id.is_null() {
+    if !trace_id.is_null() {
         if let Ok(id) = unsafe { CStr::from_ptr(id).to_str() } {
             if let Ok(trace_id) = unsafe { CStr::from_ptr(trace_id).to_str() } {
                 let span = Span::new(id, trace_id, timestamp);
@@ -299,7 +299,7 @@ pub extern "C" fn nrt_span_new(
 
 #[no_mangle]
 pub extern "C" fn nrt_span_set_id(span: *mut Span, id: *const c_char) -> bool {
-    if !span.is_null() || !id.is_null() {
+    if !id.is_null() {
         if let Some(span) = unsafe { span.as_mut() } {
             if let Ok(id) = unsafe { CStr::from_ptr(id).to_str() } {
                 span.set_id(id);
@@ -312,7 +312,7 @@ pub extern "C" fn nrt_span_set_id(span: *mut Span, id: *const c_char) -> bool {
 
 #[no_mangle]
 pub extern "C" fn nrt_span_set_trace_id(span: *mut Span, trace_id: *const c_char) -> bool {
-    if !span.is_null() || !trace_id.is_null() {
+    if !trace_id.is_null() {
         if let Some(span) = unsafe { span.as_mut() } {
             if let Ok(trace_id) = unsafe { CStr::from_ptr(trace_id).to_str() } {
                 span.set_trace_id(trace_id);
@@ -325,18 +325,16 @@ pub extern "C" fn nrt_span_set_trace_id(span: *mut Span, trace_id: *const c_char
 
 #[no_mangle]
 pub extern "C" fn nrt_span_set_timestamp(span: *mut Span, timestamp: u64) -> bool {
-    if !span.is_null() {
-        if let Some(span) = unsafe { span.as_mut() } {
-            span.set_timestamp(timestamp);
-            return true;
-        }
+    if let Some(span) = unsafe { span.as_mut() } {
+        span.set_timestamp(timestamp);
+        return true;
     }
     false
 }
 
 #[no_mangle]
 pub extern "C" fn nrt_span_set_name(span: *mut Span, name: *const c_char) -> bool {
-    if !span.is_null() || !name.is_null() {
+    if !name.is_null() {
         if let Some(span) = unsafe { span.as_mut() } {
             if let Ok(name) = unsafe { CStr::from_ptr(name).to_str() } {
                 span.set_name(name);
@@ -349,18 +347,16 @@ pub extern "C" fn nrt_span_set_name(span: *mut Span, name: *const c_char) -> boo
 
 #[no_mangle]
 pub extern "C" fn nrt_span_set_duration(span: *mut Span, duration: u64) -> bool {
-    if !span.is_null() {
-        if let Some(span) = unsafe { span.as_mut() } {
-            span.set_duration(Duration::from_millis(duration));
-            return true;
-        }
+    if let Some(span) = unsafe { span.as_mut() } {
+        span.set_duration(Duration::from_millis(duration));
+        return true;
     }
     false
 }
 
 #[no_mangle]
 pub extern "C" fn nrt_span_set_parent_id(span: *mut Span, parent_id: *const c_char) -> bool {
-    if !span.is_null() || !parent_id.is_null() {
+    if !parent_id.is_null() {
         if let Some(span) = unsafe { span.as_mut() } {
             if let Ok(parent_id) = unsafe { CStr::from_ptr(parent_id).to_str() } {
                 span.set_parent_id(parent_id);
@@ -373,7 +369,7 @@ pub extern "C" fn nrt_span_set_parent_id(span: *mut Span, parent_id: *const c_ch
 
 #[no_mangle]
 pub extern "C" fn nrt_span_set_service_name(span: *mut Span, service_name: *const c_char) -> bool {
-    if !span.is_null() || !service_name.is_null() {
+    if !service_name.is_null() {
         if let Some(span) = unsafe { span.as_mut() } {
             if let Ok(service_name) = unsafe { CStr::from_ptr(service_name).to_str() } {
                 span.set_service_name(service_name);
@@ -401,8 +397,7 @@ pub extern "C" fn nrt_span_set_attributes(
 
 #[no_mangle]
 pub extern "C" fn nrt_span_destroy(span: *mut *mut Span) {
-    if !span.is_null() {
-        let s = unsafe { *span };
+    if let Some(s) = unsafe { span.as_mut() } {
         if !s.is_null() {
             let s = unsafe { Box::from_raw(s) };
             drop(s);
