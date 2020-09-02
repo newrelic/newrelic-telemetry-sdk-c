@@ -68,7 +68,8 @@ typedef enum {
 /**
  * Initialize logging.
  *
- * This will log message of the given level to the file of the given name. 
+ * This will cause the Telemetry SDK to log message of the given level to the
+ * file of the given name. 
  *
  * @param level the log level
  * @param key the name of the file to log to. To log to the stdout or stderr,
