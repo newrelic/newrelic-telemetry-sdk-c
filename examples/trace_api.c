@@ -57,6 +57,7 @@ int main() {
     nrt_span_set_attributes(span, &attrs);
 
     nrt_span_batch_record(batch, &span);
+    nrt_span_batch_destroy(&batch);
   }
 
   /* Queue the span batch */
