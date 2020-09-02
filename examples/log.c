@@ -1,4 +1,5 @@
 #include "newrelic-telemetry-sdk.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -25,7 +26,5 @@ int main() {
 
   /* Initialize a new client with the given API key. */
   nrt_client_t* client = nrt_client_new(&cfg);
-
-  /* Wait for the batch to be sent and shut down the client. */
-  nrt_client_shutdown(&client);
+  assert(NULL == client);
 }
