@@ -391,6 +391,7 @@ pub extern "C" fn nrt_span_set_attributes(
         nrt_attributes_destroy(attributes);
         return false;
     } else {
+        nrt_attributes_destroy(attributes);
         false
     }
 }
@@ -399,7 +400,7 @@ pub extern "C" fn nrt_span_set_attributes(
 pub extern "C" fn nrt_span_destroy(span: *mut *mut Span) {
     if let Some(s) = unsafe { span.as_mut() } {
         if !s.is_null() {
-            let s = unsafe { Box::from_raw(s) };
+            let s = unsafe { Box::from_raw(*s) };
             drop(s);
             unsafe { *span = ptr::null_mut() };
         }
