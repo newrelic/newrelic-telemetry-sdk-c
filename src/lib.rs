@@ -59,6 +59,7 @@ pub extern "C" fn nrt_log_init(level: i32, filename: *const c_char) -> bool {
         1 => LevelFilter::Warn,
         2 => LevelFilter::Info,
         3 => LevelFilter::Debug,
+        4 => LevelFilter::Trace,
         _ => LevelFilter::Off,
     };
 

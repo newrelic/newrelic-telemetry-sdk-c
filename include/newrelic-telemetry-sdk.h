@@ -54,18 +54,21 @@ typedef uint64_t nrt_time_t;
  */
 nrt_attributes_t* nrt_attributes_new();
 
+/**
+ * An enum representing the available verbosity levels of the logger.
+ */
 typedef enum {
     NRT_LOG_ERROR = 0,
     NRT_LOG_WARN = 1,
     NRT_LOG_INFO = 2,
     NRT_LOG_DEBUG = 3,
+    NRT_LOG_TRACE = 4,
 } nrt_log_level_t;
 
 /**
  * Initialize logging.
  *
- * This will log message of the given level (and higher) to the file of the
- * given name. 
+ * This will log message of the given level to the file of the given name. 
  *
  * @param level the log level
  * @param key the name of the file to log to. To log to the stdout or stderr,
