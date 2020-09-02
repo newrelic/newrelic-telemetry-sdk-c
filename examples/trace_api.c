@@ -20,11 +20,15 @@ int main() {
     exit(1);
   }
 
+  /* Initialize a logger. */
+  nrt_log_init(NRT_LOG_DEBUG, "stdout");
+
   /* Initialize a configuration. */
   nrt_client_config_t* cfg = nrt_client_config_new(api_key);
 
   /* Initialize a new client with the given API key. */
   nrt_client_t* client = nrt_client_new(&cfg);
+  assert(cfg == NULL);
 
   /* Create an empty span batch */
   nrt_span_batch_t* batch = nrt_span_batch_new();
@@ -57,7 +61,8 @@ int main() {
     nrt_span_set_attributes(span, &attrs);
 
     nrt_span_batch_record(batch, &span);
-    nrt_span_batch_destroy(&batch);
+    assert(span == NULL);
+    assert(attrs == NULL);
   }
 
   /* Queue the span batch */

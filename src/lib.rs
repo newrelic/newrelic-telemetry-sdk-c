@@ -461,8 +461,9 @@ pub extern "C" fn nrt_client_send(client: *mut Client, batch: *mut *mut SpanBatc
     if let Some(client) = unsafe { client.as_mut() } {
         if let Some(b) = unsafe { batch.as_mut() } {
             if !b.is_null() {
-                client.send_spans(unsafe { *Box::from_raw(*b) });
+                let b = unsafe { *Box::from_raw(*b) };
                 unsafe { *batch = ptr::null_mut() };
+                client.send_spans(b);
                 return true;
             }
         }
