@@ -414,7 +414,9 @@ pub extern "C" fn nrt_span_batch_new() -> *mut SpanBatch {
 
 #[no_mangle]
 pub extern "C" fn nrt_span_batch_record(batch: *mut SpanBatch, span: *mut *mut Span) -> bool {
-    nrt_span_destroy(span);
+    if !span.is_null() {
+        nrt_span_destroy(span);
+    }
     true
 }
 
