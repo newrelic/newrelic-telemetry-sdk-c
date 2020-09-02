@@ -420,6 +420,7 @@ pub extern "C" fn nrt_span_batch_record(batch: *mut SpanBatch, span: *mut *mut S
             if !s.is_null() {
                 let s = unsafe { Box::from_raw(*s) };
                 batch.record(*s);
+                unsafe { *span = ptr::null_mut() };
                 return true;
             }
         }
