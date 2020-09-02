@@ -183,7 +183,7 @@ bool nrt_span_set_trace_id(nrt_span_t* span, const char* trace_id);
  * Set the start timestamp for a span
  *
  * @param span
- * @param timestamp the start timestamp for the span in Epoch milliseconds
+ * @param timestamp the start timestamp for the span
  * @return true if the start timestamp could be set
  */
 bool nrt_span_set_timestamp(nrt_span_t* span, nrt_time_t timestamp);
