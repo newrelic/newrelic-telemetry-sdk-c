@@ -58,18 +58,18 @@ nrt_attributes_t* nrt_attributes_new();
  * An enum representing the available verbosity levels of the logger.
  */
 typedef enum {
-    NRT_LOG_ERROR = 0,
-    NRT_LOG_WARN = 1,
-    NRT_LOG_INFO = 2,
-    NRT_LOG_DEBUG = 3,
-    NRT_LOG_TRACE = 4,
+  NRT_LOG_ERROR = 0,
+  NRT_LOG_WARN = 1,
+  NRT_LOG_INFO = 2,
+  NRT_LOG_DEBUG = 3,
+  NRT_LOG_TRACE = 4,
 } nrt_log_level_t;
 
 /**
  * Initialize logging.
  *
  * This will cause the Telemetry SDK to log message of the given level to the
- * file of the given name. 
+ * file of the given name.
  *
  * @param level the log level
  * @param key the name of the file to log to. To log to the stdout or stderr,
@@ -234,6 +234,7 @@ bool nrt_span_set_duration(nrt_span_t* span, nrt_time_t duration);
  *
  * @param span
  * @param attributes a collection of attributes
+ * @return true if the attributes were added
  */
 bool nrt_span_set_attributes(nrt_span_t* span, nrt_attributes_t** attributes);
 

@@ -1,4 +1,5 @@
 #include "newrelic-telemetry-sdk.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef OS_WINDOWS
@@ -11,7 +12,6 @@
  * Exercise a span.
  */
 int main() {
-
 #ifdef OS_WINDOWS
   SYSTEMTIME time;
   GetSystemTime(&time);
@@ -26,8 +26,9 @@ int main() {
   nrt_span_t* span = NULL;
   nrt_span_destroy(&span);
 
-  /* Initialize and destroy span */
+  /* Initialize a span and add attributes */
   span = nrt_span_new("span_id", "trace_id", time_ms);
+  assert(span);
   nrt_span_set_id(span, "span_id2");
   nrt_span_set_trace_id(span, "trace_id2");
   nrt_span_set_timestamp(span, time_ms);
@@ -35,7 +36,19 @@ int main() {
   nrt_span_set_duration(span, 2000);
   nrt_span_set_parent_id(span, "parent_id");
   nrt_span_set_service_name(span, "Telemetry Application");
+
+  nrt_attributes_t* attrs = nrt_attributes_new();
+  assert(attrs);
+  nrt_attributes_set_int(attrs, "int", -6);
+  nrt_attributes_set_uint(attrs, "uint", 6);
+  nrt_attributes_set_double(attrs, "double", 3.14159);
+  nrt_attributes_set_string(attrs, "string", "value");
+  nrt_attributes_set_bool(attrs, "bool", true);
+  nrt_span_set_attributes(span, &attrs);
+  assert(NULL == attrs);
+
   nrt_span_destroy(&span);
+  assert(NULL == span);
 
   /* Call with NULL parameters */
   nrt_span_set_id(NULL, NULL);
