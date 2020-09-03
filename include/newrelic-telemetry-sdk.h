@@ -227,7 +227,10 @@ bool nrt_span_set_duration(nrt_span_t* span, nrt_time_t duration);
 /**
  * Set attributes on a span
  *
- * If successful, the span gets a copy of the attributes.
+ * If the attributes were successfully added to the span, the span takes
+ * ownership of the attribute collection. Otherwise the attribute collection
+ * will be destroyed. The passed pointer to the attribute collection will
+ * always be set to NULL.
  *
  * @param span
  * @param attributes a collection of attributes

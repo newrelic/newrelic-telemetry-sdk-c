@@ -387,11 +387,11 @@ pub extern "C" fn nrt_span_set_attributes(
 ) -> bool {
     if let Some(attr) = unsafe { attributes.as_mut() } {
         if let Some(span) = unsafe { span.as_mut() } {
-            if !attr.is_null() {
-                let attr = unsafe { Box::from_raw(*attr) };
+            if let Some(attr) = unsafe { attr.as_mut() } {
                 for (key, value) in attr.iter() {
                     span.set_attribute(key, value.clone());
                 }
+                nrt_attributes_destroy(attributes);
                 return true;
             }
         }
