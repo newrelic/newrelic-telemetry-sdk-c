@@ -42,9 +42,8 @@
    fun:pthread_create*
    fun:*std*sys*unix*thread*Thread*new*
    ...
-   fun:*tokio*runtime*blocking*pool7*pawner*spawn_thread*
+   fun:*tokio*runtime*blocking*pool*Spawner*spawn_thread*
    ...
-   fun:*tokio*runtime*context*enter*
 }
 
 {
