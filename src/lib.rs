@@ -409,20 +409,35 @@ pub extern "C" fn nrt_span_destroy(span: *mut *mut Span) {
 
 #[no_mangle]
 pub extern "C" fn nrt_span_batch_new() -> *mut SpanBatch {
-    ptr::null_mut()
+    let span_batch = SpanBatch::new();
+    Box::into_raw(Box::new(span_batch))
 }
 
 #[no_mangle]
 pub extern "C" fn nrt_span_batch_record(batch: *mut SpanBatch, span: *mut *mut Span) -> bool {
-    // TODO: Remove once functionality is added
-    if !span.is_null() {
-        nrt_span_destroy(span);
+    if let Some(batch) = unsafe { batch.as_mut() } {
+        if let Some(s) = unsafe { span.as_mut() } {
+            if !s.is_null() {
+                let s = unsafe { Box::from_raw(*s) };
+                batch.record(*s);
+                unsafe { *span = ptr::null_mut() };
+                return true;
+            }
+        }
     }
-    true
+    false
 }
 
 #[no_mangle]
-pub extern "C" fn nrt_span_batch_destroy(batch: *mut *mut SpanBatch) {}
+pub extern "C" fn nrt_span_batch_destroy(batch: *mut *mut SpanBatch) {
+    if let Some(b) = unsafe { batch.as_mut() } {
+        if !b.is_null() {
+            let b = unsafe { Box::from_raw(*b) };
+            drop(b);
+            unsafe { *batch = ptr::null_mut() };
+        }
+    }
+}
 
 #[no_mangle]
 pub extern "C" fn nrt_client_new(cfg: *mut *mut ClientConfig) -> *mut Client {
@@ -446,8 +461,9 @@ pub extern "C" fn nrt_client_send(client: *mut Client, batch: *mut *mut SpanBatc
     if let Some(client) = unsafe { client.as_mut() } {
         if let Some(b) = unsafe { batch.as_mut() } {
             if !b.is_null() {
-                client.send_spans(unsafe { *Box::from_raw(*b) });
+                let b = unsafe { *Box::from_raw(*b) };
                 unsafe { *batch = ptr::null_mut() };
+                client.send_spans(b);
                 return true;
             }
         }
