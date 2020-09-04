@@ -12,20 +12,18 @@ What is the New Relic C Telemetry SDK?
 
 This SDK currently supports sending spans to the [Trace API](https://docs.newrelic.com/docs/understand-dependencies/distributed-tracing/trace-api/introduction-trace-api).
 
-[![Build Status](https://travis-ci.org/newrelic/c-sdk.svg?branch=master)](https://travis-ci.org/newrelic/c-sdk)
-
 ## Requirements
 
 The C Telemetry SDK is a wrapper around the [Rust Telemetry
-SDK](https://github.com/newrelic/newrelic-telemetry-sdk-rust). Building it
-requires:
+SDK](https://github.com/newrelic/newrelic-telemetry-sdk-rust). Minimal build
+requirements are:
 
-* CMake 3.0 or newer
-* Rust 1.44 or newer
+* CMake 3.0
+* Rust 1.44
 
 For running tests under Linux, valgrind is required.
 
-The C Telemetry SDK supports any platform that is [supported by
+The C Telemetry SDK aims to support any platform that is [supported by
 Rust](https://doc.rust-lang.org/nightly/rustc/platform-support.html). It was
 tested on 64 bit Linux (GNU GCC 7.5), and on 64 bit Windows 2019 (Visual Studio
 2019).
@@ -36,7 +34,7 @@ tested on 64 bit Linux (GNU GCC 7.5), and on 64 bit Windows 2019 (Visual Studio
 
 For building the C Telemetry SDK on Linux, run the following commands:
 
-```sh
+```
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make
@@ -44,7 +42,7 @@ make
 
 To build and run tests:
 
-```sh
+```
 mkdir build && cd build
 cmake -DENABLE_TESTS=on ..
 make
@@ -55,7 +53,7 @@ make test
 
 For building the C Telemetry SDK on Windows, run the following commands:
 
-```sh
+```
 mkdir build
 cd build
 cmake ..
