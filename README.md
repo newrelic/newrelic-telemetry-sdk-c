@@ -135,7 +135,6 @@ int main() {
 ## Find and use your data
 
 Tips on how to find and query your data in New Relic:
-- [Find metric data](https://docs.newrelic.com/docs/data-ingest-apis/get-data-new-relic/metric-api/introduction-metric-api#find-data)
 - [Find trace/span data](https://docs.newrelic.com/docs/understand-dependencies/distributed-tracing/trace-api/introduction-trace-api#view-data)
 
 For general querying information, see:
