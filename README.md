@@ -72,7 +72,7 @@ cmake --build .
 
 ## Getting Started
 
-In order to send telemetry data to New Relic APIs, you will need an Insert API key. to find out how to generate this key, see our [docs]([url](https://docs.newrelic.com/docs/apis/get-started/intro-apis/types-new-relic-api-keys)).
+In order to send telemetry data to New Relic APIs, you will need an Insert API key. to find out how to generate this key, see our [docs](https://docs.newrelic.com/docs/apis/get-started/intro-apis/types-new-relic-api-keys).
 
 Refer to the [API documentation](include/newrelic-telemetry-sdk.h) and to the
 [examples](examples).
