@@ -32,6 +32,14 @@ tested on 64 bit Linux (GNU GCC 7.5), and on 64 bit Windows 2019 (Visual Studio
 
 ## Building the C Telemetry SDK
 
+The Rust Telemetry SDK is included into this project as a git submodule. Before
+building the C Telemetry SDK, make sure git submodules are initialized by
+running this command:
+
+```
+git submodule update --init
+```
+
 ### Linux
 
 For building the C Telemetry SDK on Linux, run the following commands:
