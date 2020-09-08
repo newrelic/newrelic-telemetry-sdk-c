@@ -10,6 +10,8 @@ What is the New Relic C Telemetry SDK?
 * It's a helper library that supports sending New Relic data from within your C/C++ application.
 * It’s an example of "best practices" for sending us data.
 
+[The Telemetry SDK](https://docs.newrelic.com/docs/telemetry-data-platform/get-started/capabilities/telemetry-sdks-send-custom-telemetry-data-new-relic) provides you, the end-user-programmer, with a `Client` that sends `Spans` to New Relic. Individual spans are collected together into batches (via a `SpanBatch` object), and clients send these batches.  It serves as a foundation for getting open-standards based telemetry data like [OpenCensus](https://opencensus.io/), [OpenTracing](https://opentracing.io/), and [OpenTelemetry](https://opentelemetry.io/) into New Relic. You can use this to build tracers/exporters, such as ones based on these open standards.
+
 This SDK currently supports sending spans to the [Trace API](https://docs.newrelic.com/docs/understand-dependencies/distributed-tracing/trace-api/introduction-trace-api).
 
 ## Requirements
