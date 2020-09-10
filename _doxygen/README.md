@@ -53,7 +53,7 @@ to gihub.io.
 ## Updating
 
 The latest Doxygen files -- including `Doxyfile`, `header.html`, `footer.html`, 
-and `customdoxygen.css`-- were generated with version 1.8.11. This section
+and `customdoxygen.css`-- were generated with version 1.8.15. This section
 details the steps necessary if one must recreate these files with a newer
 version of Doxygen.
 
@@ -133,4 +133,3 @@ but includes some dated design choices.  Copy the default `tab.css` content into
 
 Performing a diff between `header.html` and `header.html.bak` offers more details
 on where to make these changes.  Same goes for `footer.html` and `footer.html.bak`.
-
