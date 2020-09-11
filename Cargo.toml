@@ -12,3 +12,4 @@ crate-type = ["staticlib", "cdylib"]
 newrelic-telemetry = { path = "vendor/newrelic-telemetry-sdk-rust", features = ["blocking"] }
 log = "0.4.11"
 simplelog = "0.8.0"
+rand = "0.6.1"
