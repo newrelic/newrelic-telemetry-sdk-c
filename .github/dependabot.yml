@@ -7,6 +7,8 @@ version: 2
 updates:
   - package-ecosystem: "cargo" # See documentation for possible values
     directory: "/" # Location of package manifests
+    ignore:
+      - dependency-name: "newrelic-telemetry"
     schedule:
       interval: "daily"
   - package-ecosystem: "gitsubmodule"
