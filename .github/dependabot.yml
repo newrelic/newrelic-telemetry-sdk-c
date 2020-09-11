@@ -10,6 +10,6 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "gitsubmodule"
-    directory: "/vendor/newrelic-telemetry-sdk-rust" # Location of submodule
+    directory: "/" # Location of .gitmodules
     schedule:
       interval: "daily"
