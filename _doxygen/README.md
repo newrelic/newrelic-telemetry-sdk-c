@@ -134,3 +134,23 @@ but includes some dated design choices.  Copy the default `tab.css` content into
 
 Performing a diff between `header.html` and `header.html.bak` offers more details
 on where to make these changes.  Same goes for `footer.html` and `footer.html.bak`.
+
+### Add image resizing to css
+The Open source newrelic image gets a bit oversized when it is converted with doxygen. Add the below bit to the `customdoxygen.css` to ensure that the image is resized to fit
+
+```
+/* Resize images to fit */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.item {
+    width: 120px;
+    min-height: 120px;
+    max-height: auto;
+    float: left;
+    margin: 3px;
+    padding: 3px;
+}
+```
