@@ -36,7 +36,7 @@ default values:
 ```
 FULL_PATH_NAMES        = NO
 HTML_DYNAMIC_SECTIONS  = NO
-HTML_OUTPUT            = ../docs
+HTML_OUTPUT            = ../html
 HTML_TIMESTAMP         = YES
 OPTIMIZE_OUTPUT_FOR_C  = YES
 PROJECT_NAME           = "New Relic C Telemetry SDK"
