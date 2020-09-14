@@ -26,6 +26,7 @@ EXAMPLE_PATH            = ../examples/
 HTML_HEADER             = header.html
 HTML_FOOTER             = footer.html
 HTML_STYLESHEET         = customdoxygen.css
+HTML_EXTRA_STYLESHEET   = image_resize.css
 INPUT                   = ../include/newrelic-telemetry-sdk.h ../README.md 
 USE_MDFILE_AS_MAINPAGE  = ../README.md
 ```
