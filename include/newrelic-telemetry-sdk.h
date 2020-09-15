@@ -469,7 +469,7 @@ void nrt_client_destroy(nrt_client_t** client);
 
 /**
  * A list of examples for Doxygen to cross-reference. If a function in
- * libnewrelic.h appears in one of these examples, the example source
+ * newrelic-telemetry-sdk.h appears in one of these examples, the example source
  * file appears under the "Examples" header.
  *
  * \example attributes.c
