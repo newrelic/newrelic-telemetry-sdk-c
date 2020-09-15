@@ -1,3 +1,11 @@
+/**
+ * @file newrelic-telemetry-sdk.h
+ *
+ * @brief This is a helper library that supports sending New Relic data
+ * from within your C/C++ application.
+ *
+ * See accompanying README and LICENSE for more information.
+ */
 #ifndef NEWRELIC_TELEMETRY_SDK
 #define NEWRELIC_TELEMETRY_SDK
 
@@ -10,35 +18,44 @@ extern "C" {
 #endif
 
 /**
- * A configuration object needed to initialize a nrt_client_t.
+ *  @brief A configuration object used to initialize a nrt_client_t.
  */
 typedef struct _nrt_client_config_t nrt_client_config_t;
 
 /**
- * A Client is capable of both queuing and sending span and metrics batches to
- * a configured New Relic collector.
+ *  @brief A Client is capable of both queuing and sending span and metrics
+ * batches to a configured New Relic collector.
  */
 typedef struct _nrt_client_t nrt_client_t;
 
 /**
- * A span batch
+ * @brief A span batch.
  *
- * A collection of spans.
+ * This holds a collection of spans.
+ * See the
+ * [specification](https://github.com/newrelic/newrelic-telemetry-sdk-specs/blob/master/capabilities.md#span-batch)
+ * for further details.
  */
 typedef struct _nrt_span_batch_t nrt_span_batch_t;
 
 /**
- * A span
+ * @brief A span.
+ *
+ * See the
+ * [specification](https://github.com/newrelic/newrelic-telemetry-sdk-specs/blob/master/capabilities.md#spans)
+ * for further details.
  */
 typedef struct _nrt_span_t nrt_span_t;
 
 /**
- * A collection of attributes
+ * @brief A collection of attributes.
+ *
+ * Allows you to add custom attributes to spans.
  */
 typedef struct _nrt_attributes_t nrt_attributes_t;
 
 /**
- * Indicates a point in time or a duration.
+ * @brief Indicates a point in time or a duration.
  *
  * A point in time is indicated by a time in Epoch milliseconds, a duration is
  * indicated by milliseconds.
@@ -46,16 +63,16 @@ typedef struct _nrt_attributes_t nrt_attributes_t;
 typedef uint64_t nrt_time_t;
 
 /**
- * Create a new attribute collection.
+ * @brief Create a new attribute collection.
  *
- * Allocate and initialize an empty attribute collection
+ * THis allocates and initializes an empty attribute collection.
  *
- * @return an empty attribute collection
+ * @return An empty attribute collection.
  */
 nrt_attributes_t* nrt_attributes_new();
 
 /**
- * An enum representing the available verbosity levels of the logger.
+ * @brief Represents the available verbosity levels of the logger.
  */
 typedef enum {
   NRT_LOG_ERROR = 0,
@@ -66,222 +83,226 @@ typedef enum {
 } nrt_log_level_t;
 
 /**
- * Initialize logging.
+ * @brief Initialize logging.
  *
- * This will cause the Telemetry SDK to log message of the given level to the
+ * This will cause the Telemetry SDK to log messages of the given level to the
  * file of the given name.
  *
- * @param level the log level
- * @param key the name of the file to log to. To log to the stdout or stderr,
- * specify `stdout` or `stderr.
+ * @param level The log level.
+ * @param filename The name of the file to log messages to. For example: if you
+ * want to log to stdout or stderr data streams, specify `stdout` or
+ * `stderr` as the filename.
+ *
+ * @return True if log was initialized.
  */
 bool nrt_log_init(nrt_log_level_t level, const char* filename);
 
 /**
- * Add an int attribute to an attribute collection
+ * @brief Add an int attribute to an attribute collection.
  *
- * @param attributes
- * @param key the attribute key
- * @param value the attribute value
- * @return true if the attribute was added
+ * @param attributes An attribute collection.
+ * @param key The attribute key.
+ * @param value The attribute value.
+ * @return True if the attribute was added.
  */
 bool nrt_attributes_set_int(nrt_attributes_t* attributes,
                             const char* key,
                             int64_t value);
 
 /**
- * Add an unsigned int attribute to an attribute collection
+ * @brief Add an unsigned int attribute to an attribute collection.
  *
- * @param attributes
- * @param key the attribute key
- * @param value the attribute value
- * @return true if the attribute was added
+ * @param attributes An attribute collection.
+ * @param key The attribute key.
+ * @param value The attribute value.
+ * @return True if the attribute was added.
  */
 bool nrt_attributes_set_uint(nrt_attributes_t* attributes,
                              const char* key,
                              uint64_t value);
 
 /**
- * Add a double attribute to an attribute collection
+ * @brief Add a double attribute to an attribute collection.
  *
- * @param attributes
- * @param key the attribute key
- * @param value the attribute value
- * @return true if the attribute was added
+ * @param attributes An attribute collection.
+ * @param key The attribute key.
+ * @param value The attribute value.
+ * @return True if the attribute was added.
  */
 bool nrt_attributes_set_double(nrt_attributes_t* attributes,
                                const char* key,
                                double value);
 
 /**
- * Add a string attribute to an attribute collection
+ * @brief Add a string attribute to an attribute collection.
  *
- * @param attributes
- * @param key the attribute key
- * @param value the attribute value
- * @return true if the attribute was added
+ * @param attributes An attribute collection.
+ * @param key The attribute key.
+ * @param value The attribute value.
+ * @return True if the attribute was added.
  */
 bool nrt_attributes_set_string(nrt_attributes_t* attributes,
                                const char* key,
                                const char* value);
 
 /**
- * Add a bool attribute to an attribute collection
+ * @brief Add a bool attribute to an attribute collection.
  *
- * @param attributes
- * @param key the attribute key
- * @param value the attribute value
- * @return true if the attribute was added
+ * @param attributes An attribute collection.
+ * @param key The attribute key.
+ * @param value The attribute value.
+ * @return True if the attribute was added.
  */
 bool nrt_attributes_set_bool(nrt_attributes_t* attributes,
                              const char* key,
                              bool value);
 
 /**
- * Destroy an attribute collection
+ * @brief Destroy an attribute collection.
  *
- * Destroy the attribute collection without adding it to a span. The passed
- * pointer will be set to NULL.
+ * This destroys the attribute collection without adding it to a span. The
+ * passed pointer will be set to NULL.
  *
- * @param attributes an attribute collection
+ * @param attributes An attribute collection.
  */
 void nrt_attributes_destroy(nrt_attributes_t** attributes);
 
 /**
- * Create a new span.
+ * @brief Create a new span.
  *
- * Allocate and initialize a new span.
+ * This Allocates and initialize a new span.
  *
- * @param id the span id
- * @param trace_id the trace id
- * @param timestamp the timestamp.
- * @return a span
+ * @param id A span id.
+ * @param trace_id The trace id.
+ * @param timestamp The timestamp.
+ * @return A span.
  */
 nrt_span_t* nrt_span_new(const char* id,
                          const char* trace_id,
                          uint64_t timestamp);
 
 /**
- * Set the id of a span
+ * @brief Set the id of a span.
  *
- * @param span
- * @param id the unique identifier for the span
- * @return true if the id could be set
+ * @param span A span.
+ * @param id The unique identifier for the span.
+ * @return True if the id could be set.
  */
 bool nrt_span_set_id(nrt_span_t* span, const char* id);
 
 /**
- * Set the trace_id of a span
+ * @brief Set the trace_id of a span.
  *
- * @param span
- * @param trace_id the trace_id for the span
- * @return true if the trace_id could be set
+ * @param   span A span.
+ * @param   trace_id The trace_id for the span.
+ * @return  True if the trace_id could be set.
  */
 bool nrt_span_set_trace_id(nrt_span_t* span, const char* trace_id);
 
 /**
- * Set the start timestamp for a span
+ * @brief Set the start timestamp for a span.
  *
- * @param span
- * @param timestamp the start timestamp for the span
- * @return true if the start timestamp could be set
+ * @param   span A span.
+ * @param   timestamp The start timestamp for the span.
+ * @return  True if the start timestamp could be set.
  */
 bool nrt_span_set_timestamp(nrt_span_t* span, nrt_time_t timestamp);
 
 /**
- * Set the name of a span
+ * @brief Set the name of a span.
  *
- * @param span
- * @param name the name for the span
- * @return true if the name could be set
+ * @param span A span.
+ * @param name The name for the span.
+ * @return True if the name could be set.
  */
 bool nrt_span_set_name(nrt_span_t* span, const char* name);
 
 /**
- * Set the service name of a span
+ * @brief Set the service name of a span.
  *
- * @param span
- * @param service_name the service name for the span
- * @return true if the service name could be set
+ * @param span A span.
+ * @param service_name The service name for the span.
+ * @return True if the service name could be set.
  */
 bool nrt_span_set_service_name(nrt_span_t* span, const char* service_name);
 
 /**
- * Set the parent_id of a span
+ * @brief Set the parent_id of a span.
  *
- * @param span
- * @param parent_id the parent_id for the span
- * @return true if the parent_id could be set
+ * @param span A span.
+ * @param parent_id The parent_id for the span.
+ * @return True if the parent_id could be set.
  */
 bool nrt_span_set_parent_id(nrt_span_t* span, const char* parent_id);
 
 /**
- * Set the duration for a span
+ * @brief Set the duration for a span.
  *
- * @param span
- * @param duration the duration for the span in milliseconds
- * @return true if the duration could be set
+ * @param span A span.
+ * @param duration The duration for the span in milliseconds.
+ * @return True if the duration could be set.
  */
 bool nrt_span_set_duration(nrt_span_t* span, nrt_time_t duration);
 
 /**
- * Set attributes on a span
+ * @brief Set attributes on a span.
  *
  * If the attributes were successfully added to the span, the span takes
  * ownership of the attribute collection. Otherwise the attribute collection
  * will be destroyed. The passed pointer to the attribute collection will
  * always be set to NULL.
  *
- * @param span
- * @param attributes a collection of attributes
- * @return true if the attributes were added
+ * @param span A span.
+ * @param attributes An attribute collection.
+ * @return true if the attributes were added.
  */
 bool nrt_span_set_attributes(nrt_span_t* span, nrt_attributes_t** attributes);
 
 /**
- * Destroy a span.
+ * @brief Destroy a span.
  *
- * Destroy a span without adding it to a batch. The passed pointer will be set
- * to NULL.
+ * This destroys a span without adding it to a batch. The passed pointer will be
+ * set to NULL.
  *
- * @param span
+ * @param span A span.
  */
 void nrt_span_destroy(nrt_span_t** span);
 
 /**
- * Create a new span batch.
+ * @brief Create a new span batch.
  *
- * A span batch is a collection of spans that is sent in one payload.
+ * A span batch is a collection of spans that is sent in one payload. This
+ * creates an empty span batch collection
  *
- * @return an empty span batch
+ * @return An empty span batch.
  */
 nrt_span_batch_t* nrt_span_batch_new();
 
 /**
- * Add a span to a span batch.
+ * @brief Add a span to a span batch.
  *
  * If the span was successfully added to the batch, the batch takes ownership
  * of the span. Otherwise the span will be destroyed. The passed pointer will
  * always be set to NULL.
  *
- * @param batch a span batch
- * @param span a span
- * @return true if the span was successfully added to the batch
+ * @param batch A span batch.
+ * @param span A span.
+ * @return True if the span was successfully added to the batch.
  */
 bool nrt_span_batch_record(nrt_span_batch_t* batch, nrt_span_t** span);
 
 /**
- * Destroy a span batch.
+ * @brief Destroy a span batch.
  *
- * Spans previously added to the span batch will be lost. The passed pointer
- * will be set to NULL.
+ * This destroys a span batch. Any spans previously added to the span batch will
+ * be lost. The passed pointer will be set to NULL.
  *
- * @param batch a span batch
+ * @param batch A span batch.
  */
 void nrt_span_batch_destroy(nrt_span_batch_t** batch);
 
 /**
- * Create a new client configuration with an Insights API key.
+ * @brief Create a new client configuration with an Insights API key.
  *
  * Other values will be set to defaults:
  *  - The default backoff factor will be 5 seconds.
@@ -291,13 +312,13 @@ void nrt_span_batch_destroy(nrt_span_batch_t** batch);
  *  - By default, product information is empty.
  *  - By default, no more than 100 batches are sent in one go.
  *
- * @param key an Insights API key
- * @return a client configuration
+ * @param key An Insights API key.
+ * @return A client configuration.
  */
 nrt_client_config_t* nrt_client_config_new(const char* key);
 
 /**
- * Configures a backoff factor.
+ * @brief Configures a backoff factor.
  *
  * If a request fails, the SDK retries the request at increasing intervals
  * and eventually drops data if the request cannot be completed.
@@ -314,14 +335,14 @@ nrt_client_config_t* nrt_client_config_new(const char* key);
  * [specification](https://github.com/newrelic/newrelic-telemetry-sdk-specs/blob/master/communication.md#graceful-degradation)
  * for further details.
  *
- * @param config a client configuration
- * @param backoff_factor a time duration used in the backoff calculation
+ * @param config A client configuration.
+ * @param backoff_factor A time duration used in the backoff calculation.
  */
 void nrt_client_config_set_backoff_factor(nrt_client_config_t* config,
                                           nrt_time_t backoff_factor);
 
 /**
- * Configures the maximum numbers of retries.
+ * @brief Configures the maximum numbers of retries.
  *
  * If a request fails, the SDK retries the request at increasing intervals
  * and eventually drops data if the request cannot be completed.
@@ -336,21 +357,21 @@ void nrt_client_config_set_backoff_factor(nrt_client_config_t* config,
  * [specification](https://github.com/newrelic/newrelic-telemetry-sdk-specs/blob/master/communication.md#graceful-degradation)
  * for further details.
  *
- * @param config a client configuration
- * @param retries the maximum number of retries for failed requests
+ * @param config A client configuration.
+ * @param retries The maximum number of retries for failed requests.
  */
 void nrt_client_config_set_retries_max(nrt_client_config_t* config,
                                        uint32_t retries);
 
 /**
- * Configure the ingest host for traces.
+ * @brief Configure the ingest host for traces.
  *
- * Overrides the default ingest host for traces to facilitate communication
+ * This overrides the default ingest host for traces to facilitate communication
  * with alternative New Relic backends.
  *
- * @param config a client configuration
- * @param host the name of the ingest host
- * @param port the port of the ingest host. Pass `0` to indicate usage of the
+ * @param config A client configuration.
+ * @param host The name of the ingest host.
+ * @param port The port of the ingest host. Pass `0` to indicate usage of the
  * default port.
  */
 void nrt_client_config_set_endpoint_traces(nrt_client_config_t* config,
@@ -358,7 +379,7 @@ void nrt_client_config_set_endpoint_traces(nrt_client_config_t* config,
                                            uint16_t port);
 
 /**
- * Configure a product and version.
+ * @brief Configure a product and version.
  *
  * The specified product and version will be appended to the `User-Agent`
  * header of payloads.
@@ -367,49 +388,50 @@ void nrt_client_config_set_endpoint_traces(nrt_client_config_t* config,
  * [specification](https://github.com/newrelic/newrelic-telemetry-sdk-specs/blob/master/communication.md#user-agent)
  * for further details.
  *
- * @param config a client configuration
- * @param product a product name
- * @param version a product version. Pass NULL to use no version.
+ * @param config A client configuration.
+ * @param product A product name.
+ * @param version A product version. Pass NULL to use no version.
  */
 void nrt_client_config_set_product_info(nrt_client_config_t* config,
                                         const char* product,
                                         const char* version);
 
 /**
- * Configure the maximum of batches sent in one go.
+ * @brief Configure the maximum of batches sent in one go.
  *
  * If the number of batches queued exceeds the maximum given here, the
- * addditional batches will be dropped. This mechanism avoids accumulating
+ * additional batches will be dropped. This mechanism avoids accumulating
  * back pressure.
  *
- * @param config a client configuration
- * @param queue_max the maximum queue size
+ * @param config A client configuration.
+ * @param queue_max The maximum queue size.
  */
 void nrt_client_config_set_queue_max(nrt_client_config_t* config,
                                      size_t queue_max);
 
 /**
- * Destroy a client configuration.
+ * @brief Destroy a client configuration.
  *
- * The passed pointer will be set to NULL.
+ * This will destroy a client configuration object and set the passed pointer to
+ * NULL.
  *
- * @param config a client configuration
+ * @param config A client configuration.
  */
 void nrt_client_config_destroy(nrt_client_config_t** config);
 
 /**
- * Create a new client.
+ * @brief Create a new client.
  *
  * The passed configuration will be destroyed and the passed pointer will
  * always be set to NULL.
  *
- * @param config a client configuration
- * @return a client
+ * @param config A client configuration.
+ * @return A client.
  */
 nrt_client_t* nrt_client_new(nrt_client_config_t** config);
 
 /**
- * Send a span batch.
+ * @brief Send a span batch.
  *
  * Put a span batch in the queue of the client. This function returns as soon
  * as the span batch was queued and doesn't wait for it to be sent
@@ -419,31 +441,44 @@ nrt_client_t* nrt_client_new(nrt_client_config_t** config);
  * span batch. Otherwise the batch will be destroyed. The passed pointer will
  * always be set to NULL.
  *
- * @param client a client
- * @param client the span batch to be sent
- * @return true if the span batch was successfully queued
+ * @param client A client.
+ * @param batch The span batch to be sent.
+ * @return True if the span batch was successfully queued.
  */
 bool nrt_client_send(nrt_client_t* client, nrt_span_batch_t** batch);
 
 /**
- * Shutdown a client.
+ * @brief Shutdown a client.
  *
  * Shuts down the client, sends pending data and frees the client object. The
  * passed pointer will be set to NULL.
  *
- * @param client a client
+ * @param client A client.
  */
 void nrt_client_shutdown(nrt_client_t** client);
 
 /**
- * Destroy a client.
+ * @brief Destroy a client.
  *
  * Destroy the client, without making sure pending data is sent. The passed
  * pointer will be set to NULL.
  *
- * @param client a client
+ * @param client A client.
  */
 void nrt_client_destroy(nrt_client_t** client);
+
+/**
+ * A list of examples for Doxygen to cross-reference. If a function in
+ * newrelic-telemetry-sdk.h appears in one of these examples, the example source
+ * file appears under the "Examples" header.
+ *
+ * \example attributes.c
+ * \example configuration.c
+ * \example log.c
+ * \example simple.c
+ * \example span.c
+ * \example trace_api.c
+ */
 
 #ifdef __cplusplus
 }
