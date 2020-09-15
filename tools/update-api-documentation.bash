@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#
+# Copyright 2020 New Relic Corporation. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 set -e
 
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
