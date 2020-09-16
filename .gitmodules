@@ -1,3 +1,0 @@
-[submodule "vendor/newrelic-telemetry-sdk-rust"]
-	path = vendor/newrelic-telemetry-sdk-rust
-	url = git@github.com:newrelic/newrelic-telemetry-sdk-rust
