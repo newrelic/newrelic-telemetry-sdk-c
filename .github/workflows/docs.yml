@@ -7,16 +7,16 @@ on:
 jobs:
   api_docs:
       name: Build Api Documentation
-      runs-on: ubuntu-latest
+      runs-on: ubuntu-20.04
       steps:
       - name: checkout
         uses: actions/checkout@v2
         with:
-            token: ${{ secrets.NEWRELIC_PAT }}
             submodules: recursive
 
       - name: Install Dependencies
         run: |
+            sudo apt-get update
             sudo apt-get install -y doxygen
 
       - name: Build Documentation
