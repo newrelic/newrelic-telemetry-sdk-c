@@ -1,6 +1,8 @@
-[![Community Project header](https://github.com/newrelic/open-source-office/raw/master/examples/categories/images/Community_Project.png)](https://github.com/newrelic/open-source-office/blob/master/examples/categories/index.md#community-project)
+## Archival Notice ##
 
-# New Relic C Telemetry SDK
+As of August, 2023 The *New Relic C Telemetry SDK* is archived.
+
+# New Relic C Telemetry SDK # 
 
 ![Build status](https://github.com/newrelic/newrelic-telemetry-sdk-c/workflows/CI/badge.svg)
 [![Release](https://img.shields.io/github/v/release/newrelic/newrelic-telemetry-sdk-c?include_prereleases&style=)](https://github.com/newrelic/newrelic-telemetry-sdk-c/releases/)
