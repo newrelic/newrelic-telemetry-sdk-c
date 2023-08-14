@@ -1,3 +1,6 @@
+## Archival Notice ##
+As of August 2023, we are archiving the Telemetry SDK C project.
+
 # Contributing
 
 Contributions are always welcome. Before contributing please read the
