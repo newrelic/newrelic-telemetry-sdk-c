@@ -1,6 +1,6 @@
 ## Archival Notice ##
 
-As of August, 2023 The *New Relic C Telemetry SDK* is archived.
+As of August 2023, The *New Relic C Telemetry SDK* is archived.
 
 # New Relic C Telemetry SDK # 
 
