@@ -161,15 +161,6 @@ practices. Like all official New Relic open source projects, there's a related
 Community topic in the New Relic Explorers Hub. You can find this project's
 topic/threads in the [Telemetry SDK section of Explorers Hub](https://discuss.newrelic.com/t/new-relic-c-telemetry-sdk/114557)
 
-## Contributing
-
-We encourage your contributions to improve the C Telemetry SDK! Keep in mind
-when you submit your pull request, you'll need to sign the CLA via the 
-click-through using CLA-Assistant. You only have to sign the CLA one time per
-project. If you have any questions, or to execute our corporate CLA, required
-if your contribution is on behalf of a company,  please drop us an email at
-opensource@newrelic.com.
-
 ## License
 
 The C Telemetry SDK is licensed under the [Apache 2.0](http://apache.org/licenses/LICENSE-2.0.txt) 
